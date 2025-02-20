@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">MedStandarts</string>
+    <string name="title_airforse">Air Force</string>
+    <string name="title_army">Army</string>
+    <string name="title_navy">Navy</string>
+    <string name="title_dod">DoD/MHS</string>
+    <string name="title_about">About</string>
+</resources>

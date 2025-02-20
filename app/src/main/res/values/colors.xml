@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="airForce">#08549C</color>
+    <color name="army">#174B2A</color>
+    <color name="navy">#003882</color>
+    <color name="about">#000000</color>
+    <color name="dod">#6a0dad</color>
+</resources>

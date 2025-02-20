@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_airfose"
+        android:icon="@drawable/fighterjet"
+        android:title="@string/title_airforse" />
+
+    <item
+        android:id="@+id/navigation_army"
+        android:icon="@drawable/tank"
+        android:title="@string/title_army" />
+
+    <item
+        android:id="@+id/navigation_navy"
+        android:icon="@drawable/battleship"
+        android:title="@string/title_navy" />
+
+    <item
+        android:id="@+id/navigation_dod"
+        android:icon="@drawable/pentagon"
+        android:title="@string/title_dod" />
+
+    <item
+        android:id="@+id/navigation_about"
+        android:icon="@drawable/info"
+        android:title="@string/title_about" />
+
+</menu>
