@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.colbycoapps.med_standarts.R
 import com.colbycoapps.med_standarts.databinding.ActivityPdfViewerBinding
+import com.colbycoapps.med_standarts.ui.Utils
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.tom_roush.pdfbox.android.PDFBoxResourceLoader
 import com.tom_roush.pdfbox.pdmodel.PDDocument
@@ -88,30 +89,56 @@ class PdfViewerActivity : AppCompatActivity() {
             finish()
             return
         }
+        val pdfName = intent.getStringExtra("PDF_NAME")
         val COLOR = intent.getStringExtra("COLOR")
         when(COLOR)
         {
             "airForce" -> {
                 updateColors(R.color.airForce)
-                supportActionBar?.title = Uri.parse(pdfUrl).lastPathSegment
-                    ?.replace("PDFs/af/AFIs/", "")
-                    ?.replace("PDFs/af/RSVs/", "")
-                    ?.replace("PDFs/af/bomc/", "")
-                    ?.replace("PDFs/af/fsToolkit/", "")
-                    ?.replace("PDFs/af/main/", "")?: "PDF Viewer"
+                if(pdfName != null)
+                {
+                    supportActionBar?.title = pdfName
+                }
+                else {
+                    supportActionBar?.title = Uri.parse(pdfUrl).lastPathSegment
+                        ?.replace("PDFs/af/AFIs/", "")
+                        ?.replace("PDFs/af/RSVs/", "")
+                        ?.replace("PDFs/af/bomc/", "")
+                        ?.replace("PDFs/af/fsToolkit/", "")
+                        ?.replace("PDFs/af/main/", "") ?: "PDF Viewer"
+                }
             }
             "army" -> {
                 updateColors(R.color.army)
-                supportActionBar?.title = Uri.parse(pdfUrl).lastPathSegment?.replace("PDFs/army/", "") ?: "PDF Viewer"
+                if(pdfName != null)
+                {
+                    supportActionBar?.title = pdfName
+                }
+                else {
+                    supportActionBar?.title = Uri.parse(pdfUrl).lastPathSegment?.replace("PDFs/army/", "") ?: "PDF Viewer"
+                }
 
             }
             "navy" -> {
-                supportActionBar?.title = Uri.parse(pdfUrl).lastPathSegment?.replace("PDFs/navy/", "") ?: "PDF Viewer"
                 updateColors(R.color.navy)
+
+                if(pdfName != null)
+                {
+                    supportActionBar?.title = pdfName
+                }
+                else {
+                    supportActionBar?.title = Uri.parse(pdfUrl).lastPathSegment?.replace("PDFs/navy/", "") ?: "PDF Viewer"
+                }
             }
             "dod" -> {
-                supportActionBar?.title = Uri.parse(pdfUrl).lastPathSegment?.replace("PDFs/dod/", "") ?: "PDF Viewer"
                 updateColors(R.color.dod)
+                if(pdfName != null)
+                {
+                    supportActionBar?.title = pdfName
+                }
+                else {
+                    supportActionBar?.title = Uri.parse(pdfUrl).lastPathSegment?.replace("PDFs/dod/", "") ?: "PDF Viewer"
+                }
             }
             "about" -> {
                 updateColors(R.color.about)
@@ -129,15 +156,41 @@ class PdfViewerActivity : AppCompatActivity() {
         setupWebView()
 
         CoroutineScope(Dispatchers.IO).launch {
-            pdfFile = if (pdfUrl.startsWith("http", ignoreCase = true)) {
-                File(downloadPdfFile(pdfUrl).path!!)
-            } else {
-                File(Uri.parse(pdfUrl).path!!)
+            if(!Utils.storage) {
+                pdfFile = if (pdfUrl.startsWith("http", ignoreCase = true)) {
+                    File(downloadPdfFile(pdfUrl).path!!)
+                } else {
+                    File(Uri.parse(pdfUrl).path!!)
+                }
+                withContext(Dispatchers.Main) {
+                    loadPdfFromUri(pdfFile!!.toUri())
+                }
             }
+            else
+            {
+                pdfFile = getFileFromUri(this@PdfViewerActivity, Uri.parse(pdfUrl))
+                withContext(Dispatchers.Main) {
+                    loadPdfFromUri(pdfFile!!.toUri())
+                }
+            }
+        }
+    }
 
-            withContext(Dispatchers.Main) {
-                loadPdfFromUri(pdfFile!!.toUri())
+    fun getFileFromUri(context: Context, uri: Uri): File? {
+        return if (uri.scheme.equals("file", ignoreCase = true)) {
+            File(uri.path ?: "")
+        } else if (uri.scheme.equals("content", ignoreCase = true)) {
+            // Створюємо тимчасовий файл у cache директорії
+            val fileName = "temp_pdf_file.pdf" // Можна розширити логіку для отримання оригінальної назви
+            val tempFile = File(context.cacheDir, fileName)
+            context.contentResolver.openInputStream(uri)?.use { input ->
+                tempFile.outputStream().use { output ->
+                    input.copyTo(output)
+                }
             }
+            tempFile
+        } else {
+            null
         }
     }
 
@@ -163,6 +216,7 @@ class PdfViewerActivity : AppCompatActivity() {
         binding.webView.webViewClient = WebViewClient()
         binding.webView.webChromeClient = WebChromeClient()
     }
+
     private fun highlightWordsInPdf(query: String) {
         progressDialog.setMessage("Searching for \"$query\"...")
         progressDialog.show()

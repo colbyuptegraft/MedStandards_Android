@@ -11,6 +11,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.colbycoapps.med_standarts.databinding.FragmentArmyBinding
+import com.colbycoapps.med_standarts.ui.Utils
 import com.colbycoapps.med_standarts.ui.adapter.FileAdapter
 import com.colbycoapps.med_standarts.ui.pdfview.PdfViewerActivity
 
@@ -26,22 +27,34 @@ class ArmyFragment : Fragment(), FileAdapter.OnFileClickListener {
         val root: View = binding.root
 
         setupViewModelObservers()
-        viewModel.loadFiles() // Завантажуємо файли зі збереженої мапи
+        if(!Utils.storage)
+            viewModel.loadFiles()
+        else
+            viewModel.loadFilesStorage(requireActivity())
 
         return root
     }
 
     private fun setupViewModelObservers() {
         viewModel.files.observe(viewLifecycleOwner) { fileList ->
-            adapter = FileAdapter(fileList, this)
+            if(!Utils.storage) {
+                adapter = FileAdapter(fileList, this, false)
+                binding.listArmy.layoutManager = LinearLayoutManager(requireActivity())
+                binding.listArmy.adapter = adapter
+            }
+        }
+
+        viewModel.filesStorage.observe(viewLifecycleOwner) { fileList ->
+            adapter = FileAdapter(fileList, this, true)
             binding.listArmy.layoutManager = LinearLayoutManager(requireActivity())
             binding.listArmy.adapter = adapter
         }
     }
 
-    override fun onFileClick(fileName: String) {
+    override fun onFileClick(fileName: String, fileUrl: String) {
         val intent = Intent(requireContext(), PdfViewerActivity::class.java).apply {
-            putExtra("PDF_URL", fileName)
+            putExtra("PDF_URL", fileUrl)
+            if(fileName != "") putExtra("PDF_NAME", fileName)
             putExtra("COLOR", "army")
         }
         startActivity(intent)

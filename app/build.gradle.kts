@@ -56,6 +56,13 @@ dependencies {
     implementation(libs.firebase.analytics)
  //   implementation(libs.android.pdf.viewer)
     implementation("com.tom-roush:pdfbox-android:2.0.27.0")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
+    implementation("androidx.work:work-runtime-ktx:2.10.0")
+    implementation("com.google.firebase:firebase-messaging:24.1.0")
+    implementation("io.github.nikartm:fit-button:2.0.0")
+    implementation("com.android.billingclient:billing:7.1.1")
+
 //    implementation("com.github.chrisbanes:PhotoView:2.3.0")
 //    implementation("com.pdftron:pdftron:11.0.0")
     //implementation("com.pdftron:pdftron-standard:11.0.0")

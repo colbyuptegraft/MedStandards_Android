@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.colbycoapps.med_standarts.databinding.FragmentAirforseBinding
+import com.colbycoapps.med_standarts.ui.Utils
 import com.colbycoapps.med_standarts.ui.adapter.AirForceFileAdapter
 import com.colbycoapps.med_standarts.ui.pdfview.PdfViewerActivity
 
@@ -25,12 +26,19 @@ class AirForceFragment : Fragment(), AirForceFileAdapter.OnFileClickListener {
         setupRecyclerView()
         setupObservers()
 
-        // Завантажуємо корінь "af"
-        viewModel.loadFiles()
+        if(!Utils.storage)
+            viewModel.loadFiles()
+        else
+            viewModel.loadFolderStorage(requireActivity())
 
-        // Кнопка "Назад"
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            if (!viewModel.navigateBack()) requireActivity().finish()
+            if(!Utils.storage) {
+                if (!viewModel.navigateBack()) requireActivity().finish()
+            }
+            else
+            {
+                viewModel.loadFolderStorage(requireActivity())
+            }
         }
 
         return binding.root
@@ -44,21 +52,38 @@ class AirForceFragment : Fragment(), AirForceFileAdapter.OnFileClickListener {
 
     private fun setupObservers() {
         viewModel.filesAndFolders.observe(viewLifecycleOwner) { list ->
+            if(!Utils.storage)
+                adapter.updateItems(list)
+        }
+
+        viewModel.filesAndFoldersStorage.observe(viewLifecycleOwner) { list ->
             adapter.updateItems(list)
         }
     }
 
     override fun onFileClick(itemName: String, itemValue: String) {
         if (itemValue == "folder") {
-            // Користувач натиснув на підпапку
-            val newPath = itemName
-            viewModel.loadFiles(newPath)
+            if(!Utils.storage) {
+                val newPath = itemName
+                viewModel.loadFiles(newPath)
+            }
+            else
+            {
+                viewModel.loadFilesFolderStorage(requireActivity(), itemName)
+            }
         } else {
             // Це URL файлу
-            val intent = Intent(requireContext(), PdfViewerActivity::class.java).apply {
+            val intent = if(!Utils.storage)Intent(requireContext(), PdfViewerActivity::class.java).apply {
                 putExtra("PDF_URL", itemValue)
                 putExtra("COLOR", "airForce")
             }
+            else
+                Intent(requireContext(), PdfViewerActivity::class.java).apply {
+                    putExtra("PDF_NAME", itemName)
+                    putExtra("PDF_URL", itemValue)
+                    putExtra("COLOR", "airForce")
+                }
+
             startActivity(intent)
         }
     }

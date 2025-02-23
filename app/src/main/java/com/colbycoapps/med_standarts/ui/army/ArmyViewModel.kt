@@ -1,5 +1,6 @@
 package com.colbycoapps.med_standarts.ui.army
 
+import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.LiveData
@@ -13,6 +14,9 @@ class ArmyViewModel : ViewModel() {
 
     private val _files = MutableLiveData<List<Pair<String, String>>>()
     val files: LiveData<List<Pair<String, String>>> = _files
+
+    private val _filesStorage = MutableLiveData<List<Pair<String, String>>>()
+    val filesStorage: LiveData<List<Pair<String, String>>> = _filesStorage
 
     fun loadFiles() {
         val armyFiles = Utils.filesMap["army"] ?: emptyList()
@@ -37,5 +41,26 @@ class ArmyViewModel : ViewModel() {
         } else {
             Log.e("Firebase", "❌ Файли у папці 'army' відсутні!")
         }
+    }
+
+    fun loadFilesStorage(context: Context) {
+        val result = mutableListOf<Pair<String, String>>()
+        val rootDir = context.getExternalFilesDir("pdfs/army")
+
+        if (rootDir != null && rootDir.exists() && rootDir.isDirectory) {
+            // Зчитуємо всі .pdf-файли
+            val files = rootDir.listFiles()?.filter {
+                it.isFile && it.extension.equals("pdf", ignoreCase = true)
+            } ?: emptyList()
+
+            // Формуємо список (назва без .pdf, Uri)
+            files.forEach { file ->
+                val fileName = file.nameWithoutExtension  // назва без .pdf
+                val fileUri = Uri.fromFile(file)          // Uri для відкриття
+                result.add(fileName to fileUri.toString())
+            }
+        }
+        _filesStorage.value = result
+
     }
 }

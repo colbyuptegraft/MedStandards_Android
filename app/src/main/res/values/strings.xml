@@ -1,8 +1,13 @@
 <resources>
-    <string name="app_name">MedStandarts</string>
+    <string name="app_name">Med Standarts</string>
     <string name="title_airforse">Air Force</string>
     <string name="title_army">Army</string>
     <string name="title_navy">Navy</string>
     <string name="title_dod">DoD/MHS</string>
     <string name="title_about">About</string>
+    <string name="about">This application presents the medical standards for special duty personnel of the United States Air Force, Army, and Navy as well as some other useful tools and information for Aerospace Medicine Professionals.\n\nAll AFIs, ARs, and Navy documents were screening and approved for
+                 inclusion in this application by Air Force Public Affairs.\n\nUpdates with new document versions will occur once every 4-6 weeks. For questions
+                 concerns, and/or suggestions, please email info@doc-apps.com\n\nNote: Effective 30 Jun 2025, marking 10 years of independently creating &amp; maintaining
+                 this app, I will no longer be able to continue this service.
+                  If you have coding experience and are interested in taking ownership of Med Standards, please email the above address.</string>
 </resources>

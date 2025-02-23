@@ -3,20 +3,68 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.navy.NavyFragment">
+    android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/text_notifications"
+
+    <com.github.nikartm.button.FitButton
+        android:id="@+id/button"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:textAlignment="center"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_height="46dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="16dp"
+        android:enabled="true"
+        android:gravity="center|center_vertical"
+        app:fb_backgroundColor="#000"
+        app:fb_cornerRadius="30dp"
+        app:fb_shape="rectangle"
+        app:fb_text="Download PDF"
+        app:fb_textColor="#fff"
+        app:fb_textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="TouchTargetSizeCheck" />
+
+    <com.github.nikartm.button.FitButton
+        android:id="@+id/buttonSubs"
+        android:layout_width="match_parent"
+        android:layout_height="46dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="16dp"
+        android:enabled="true"
+        android:gravity="center|center_vertical"
+        app:fb_backgroundColor="#000"
+        app:fb_cornerRadius="30dp"
+        app:fb_shape="rectangle"
+        app:fb_text="Subscription plan"
+        app:fb_textColor="#fff"
+        app:fb_textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button"
+        tools:ignore="TouchTargetSizeCheck" />
+
+    <com.github.nikartm.button.FitButton
+        android:id="@+id/buttonAbout"
+        android:layout_width="match_parent"
+        android:layout_height="46dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="16dp"
+        android:enabled="true"
+        android:gravity="center|center_vertical"
+        app:fb_backgroundColor="#000"
+        app:fb_cornerRadius="30dp"
+        app:fb_shape="rectangle"
+        app:fb_text="About"
+        app:fb_textColor="#fff"
+        app:fb_textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttonSubs"
+        tools:ignore="TouchTargetSizeCheck" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
