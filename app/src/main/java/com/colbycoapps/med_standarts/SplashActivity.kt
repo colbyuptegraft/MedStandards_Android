@@ -66,10 +66,19 @@ class SplashActivity : AppCompatActivity() {
 //        }
 
         if (isInternetAvailable(this)) {
-            val storageRef = FirebaseStorage.getInstance().reference.child("PDFs")
-            listFilesWithPagination(storageRef, null)
-            listAfFilesWithPagination(storageRef.child("af"), null)
-            Log.d("FirebaseStorage", "true")
+            if(Utils.filesMap.isEmpty() && Utils.afFilesMap.isEmpty()) {
+                val storageRef = FirebaseStorage.getInstance().reference.child("PDFs")
+                listFilesWithPagination(storageRef, null)
+                listAfFilesWithPagination(storageRef.child("af"), null)
+                Log.d("FirebaseStorage", "true")
+            }
+            else
+            {
+                CoroutineScope(Dispatchers.Main).launch {
+                    delay(2000)
+                    navigateToMain()
+                }
+            }
         }
         else
         {

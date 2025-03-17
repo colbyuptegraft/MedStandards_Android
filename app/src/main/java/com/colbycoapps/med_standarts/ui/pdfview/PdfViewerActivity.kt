@@ -83,6 +83,10 @@ class PdfViewerActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         PDFBoxResourceLoader.init(applicationContext)
+        setSupportActionBar(binding.toolbar2)
+        binding.toolbar2.navigationIcon?.setTint(Color.WHITE)
+        binding.toolbar2.setTitleTextColor(Color.WHITE)
+        binding.toolbar2.setSubtitleTextColor(Color.WHITE)
 
         val pdfUrl = intent.getStringExtra("PDF_URL") ?: run {
             Toast.makeText(this, "PDF URL not provided", Toast.LENGTH_SHORT).show()
@@ -97,7 +101,7 @@ class PdfViewerActivity : AppCompatActivity() {
                 updateColors(R.color.airForce)
                 if(pdfName != null)
                 {
-                    supportActionBar?.title = pdfName
+                    supportActionBar?.title = pdfName.split("#")[0]
                 }
                 else {
                     supportActionBar?.title = Uri.parse(pdfUrl).lastPathSegment
@@ -105,17 +109,17 @@ class PdfViewerActivity : AppCompatActivity() {
                         ?.replace("PDFs/af/RSVs/", "")
                         ?.replace("PDFs/af/bomc/", "")
                         ?.replace("PDFs/af/fsToolkit/", "")
-                        ?.replace("PDFs/af/main/", "") ?: "PDF Viewer"
+                        ?.replace("PDFs/af/main/", "")!!.split("#")[0] ?: "PDF Viewer"
                 }
             }
             "army" -> {
                 updateColors(R.color.army)
                 if(pdfName != null)
                 {
-                    supportActionBar?.title = pdfName
+                    supportActionBar?.title = pdfName.split("#")[0]
                 }
                 else {
-                    supportActionBar?.title = Uri.parse(pdfUrl).lastPathSegment?.replace("PDFs/army/", "") ?: "PDF Viewer"
+                    supportActionBar?.title = Uri.parse(pdfUrl).lastPathSegment?.replace("PDFs/army/", "")!!.split("#")[0] ?: "PDF Viewer"
                 }
 
             }
@@ -124,20 +128,20 @@ class PdfViewerActivity : AppCompatActivity() {
 
                 if(pdfName != null)
                 {
-                    supportActionBar?.title = pdfName
+                    supportActionBar?.title = pdfName.split("#")[0]
                 }
                 else {
-                    supportActionBar?.title = Uri.parse(pdfUrl).lastPathSegment?.replace("PDFs/navy/", "") ?: "PDF Viewer"
+                    supportActionBar?.title = Uri.parse(pdfUrl).lastPathSegment?.replace("PDFs/navy/", "")!!.split("#")[0] ?: "PDF Viewer"
                 }
             }
             "dod" -> {
                 updateColors(R.color.dod)
                 if(pdfName != null)
                 {
-                    supportActionBar?.title = pdfName
+                    supportActionBar?.title = pdfName.split("#")[0]
                 }
                 else {
-                    supportActionBar?.title = Uri.parse(pdfUrl).lastPathSegment?.replace("PDFs/dod/", "") ?: "PDF Viewer"
+                    supportActionBar?.title = Uri.parse(pdfUrl).lastPathSegment?.replace("PDFs/dod/", "")!!.split("#")[0] ?: "PDF Viewer"
                 }
             }
             "about" -> {
@@ -174,6 +178,14 @@ class PdfViewerActivity : AppCompatActivity() {
                 }
             }
         }
+
+        setSupportActionBar(binding.toolbar2)
+
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowHomeEnabled(true)
+        binding.toolbar2.setNavigationOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
     }
 
     fun getFileFromUri(context: Context, uri: Uri): File? {
@@ -207,15 +219,21 @@ class PdfViewerActivity : AppCompatActivity() {
     }
 
     private fun setupWebView() {
-        binding.webView.settings.javaScriptEnabled = true
-        binding.webView.settings.allowFileAccess = true
-        binding.webView.settings.allowContentAccess = true
-        binding.webView.settings.setSupportZoom(true) // 🟢 Включення масштабування
-        binding.webView.settings.builtInZoomControls = true // 🟢 Додавання контролів
-        binding.webView.settings.displayZoomControls = false // 🟢 Приховуємо контрол з "+" і "-"
+        binding.webView.settings.apply {
+            javaScriptEnabled = true
+            allowFileAccess = true
+            allowContentAccess = true
+            setSupportZoom(true) // Дозволити масштабування
+            builtInZoomControls = true // Додати контролери масштабування
+            displayZoomControls = false // Приховати кнопки "+" і "-"
+            useWideViewPort = true // **Головне: Масштабує контент до ширини екрану**
+            loadWithOverviewMode = true // **Головне: Підганяє весь контент у WebView**
+        }
+
         binding.webView.webViewClient = WebViewClient()
         binding.webView.webChromeClient = WebChromeClient()
     }
+
 
     private fun highlightWordsInPdf(query: String) {
         progressDialog.setMessage("Searching for \"$query\"...")
@@ -223,27 +241,33 @@ class PdfViewerActivity : AppCompatActivity() {
 
         CoroutineScope(Dispatchers.IO).launch {
             pdfFile?.let { file ->
-                val document = PDDocument.load(file)
+                // 🔥 1. Перенумерація сторінок
+                val newPdfFile = renumberAndSavePdf(file)
+                val document = PDDocument.load(newPdfFile)
+
+                // 🔥 2. Пошук за оновленою нумерацією
                 val highlightMap: Map<Int, List<QuadInfo>> = findTextPositions(document, query)
                 addHighlightAnnotations(document, highlightMap)
 
-                val newFile = File(cacheDir, "highlighted.pdf")
-                document.use { it.save(newFile) }
+                // 🔥 3. Збереження нового PDF із анотаціями
+                val finalFile = File(cacheDir, "highlighted.pdf")
+                document.use { it.save(finalFile) }
                 document.close()
 
-                searchResults = extractTextWithContext(file, query) // Отримуємо слова з контекстом
+                searchResults = extractTextWithContext(finalFile, query)
 
                 withContext(Dispatchers.Main) {
-                    pdfFile = newFile
-                    openRenderer(newFile)
+                    pdfFile = finalFile
+                    openRenderer(finalFile)
                     loadPdfFromUri(pdfFile!!.toUri())
 
                     progressDialog.dismiss()
-                    showResultsBottomSheet() // 🔥 Показати список знайдених слів
+                    showResultsBottomSheet()
                 }
             }
         }
     }
+
 
     private fun extractTextWithContext(pdfFile: File, query: String): MutableList<SearchResult> {
         val results = mutableListOf<SearchResult>()
@@ -365,19 +389,21 @@ class PdfViewerActivity : AppCompatActivity() {
 
 
     private fun extractPageText(document: PDDocument, pageIndex: Int): String {
-        val stripper = object : PDFTextStripper() {}
-        stripper.startPage = pageIndex + 1
-        stripper.endPage = pageIndex + 1
-
-        return stripper.getText(document)
+        val stripper = PDFTextStripper().apply {
+            startPage = pageIndex + 1
+            endPage = pageIndex + 1
+        }
+        return stripper.getText(document).trim() // Видаляємо зайві пробіли
     }
 
 
     private fun findTextPositions(document: PDDocument, query: String): Map<Int, List<QuadInfo>> {
         val result = mutableMapOf<Int, MutableList<QuadInfo>>()
+
         for (pageIndex in 0 until document.numberOfPages) {
             val page = document.getPage(pageIndex)
             val textPositions = mutableListOf<TextPosition>()
+
             val stripper = object : PDFTextStripper() {
                 override fun processTextPosition(text: TextPosition) {
                     textPositions.add(text)
@@ -386,33 +412,31 @@ class PdfViewerActivity : AppCompatActivity() {
             stripper.startPage = pageIndex + 1
             stripper.endPage = pageIndex + 1
             stripper.getText(document)
-            if (textPositions.isNotEmpty()) {
-                for (i in 0 until textPositions.size - query.length + 1) {
-                    val subList = textPositions.subList(i, i + query.length)
-                    val subText = subList.joinToString(separator = "") { it.unicode }
-                    if (subText.equals(query, ignoreCase = true)) {
-                        val first = subList.first()
-                        val last = subList.last()
-                        val mediaBox = page.mediaBox
-                        val x = first.xDirAdj
-                        val y = mediaBox.height - first.yDirAdj
-                        val w = (last.xDirAdj + last.widthDirAdj) - first.xDirAdj
-                        val h = first.heightDir
-                        val rectX = x
-                        val rectY = y - h
-                        val rectW = w
-                        val rectH = h
-                        val quads = floatArrayOf(x, y, x, y - h, x + w, y, x + w, y - h)
-                        val info = QuadInfo(pageIndex, quads, rectX, rectY, rectW, rectH)
-                        result.getOrPut(pageIndex) { mutableListOf() }.add(info)
-                        Log.d("HIGHLIGHT", "Found match on page $pageIndex: \"$subText\" at (x=$x, y=$y, w=$w, h=$h) QuadPoints: ${quads.joinToString()}")
-                    }
+
+            for (i in 0 until textPositions.size - query.length + 1) {
+                val subList = textPositions.subList(i, i + query.length)
+                val subText = subList.joinToString("") { it.unicode }
+
+                if (subText.equals(query, ignoreCase = true)) {
+                    val first = subList.first()
+                    val last = subList.last()
+                    val mediaBox = page.mediaBox
+                    val x = first.xDirAdj
+                    val y = mediaBox.height - first.yDirAdj
+                    val w = (last.xDirAdj + last.widthDirAdj) - first.xDirAdj
+                    val h = first.heightDir
+                    val quads = floatArrayOf(x, y, x, y - h, x + w, y, x + w, y - h)
+
+                    val info = QuadInfo(pageIndex, quads, x, y - h, w, h)
+                    result.getOrPut(pageIndex) { mutableListOf() }.add(info)
                 }
             }
         }
-        Log.d("HIGHLIGHT", "Processed all pages.")
+
         return result.mapValues { it.value.toList() }.toMutableMap()
     }
+
+
 
 
 
@@ -433,7 +457,27 @@ class PdfViewerActivity : AppCompatActivity() {
         }
     }
 
+    private fun renumberAndSavePdf(originalFile: File): File {
+        val document = PDDocument.load(originalFile)
+        val newDocument = PDDocument()
 
+        val pageNumberMap = mutableMapOf<Int, Int>()
+
+        for ((newIndex, oldIndex) in document.pages.count().let { (0 until it).withIndex() }) {
+            val oldPage = document.getPage(oldIndex)
+            newDocument.addPage(oldPage)
+            pageNumberMap[oldIndex] = newIndex
+        }
+
+        val renumberedFile = File(cacheDir, "renumbered.pdf")
+        newDocument.use { it.save(renumberedFile) }
+        document.close()
+
+        Log.d("RENAMING", "Saved renumbered PDF as: ${renumberedFile.absolutePath}")
+        return renumberedFile
+    }
+
+    
 
     // Завантаження PDF-файлу з URL (приклад)
     private fun downloadPdfFile(urlStr: String): Uri {

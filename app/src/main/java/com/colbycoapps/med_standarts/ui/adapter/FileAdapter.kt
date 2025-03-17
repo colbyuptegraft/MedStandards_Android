@@ -20,7 +20,9 @@ class FileAdapter(private val files: List<Pair<String, String>>, private val lis
 
     override fun onBindViewHolder(holder: FileViewHolder, position: Int) {
         val (fileName, fileUrl) = files[position]
-        holder.fileName.text = fileName
+        val strings = fileName.split("#")
+        holder.fileName.text = strings[0]
+        holder.fileDescr.text = strings[1]
         if(!storage)
             holder.itemView.setOnClickListener { listener.onFileClick("", fileUrl) }
         else
@@ -31,5 +33,6 @@ class FileAdapter(private val files: List<Pair<String, String>>, private val lis
 
     class FileViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val fileName: TextView = view.findViewById(R.id.fileName)
+        val fileDescr: TextView = view.findViewById(R.id.fileDescr)
     }
 }

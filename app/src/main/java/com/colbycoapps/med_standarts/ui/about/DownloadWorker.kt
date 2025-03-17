@@ -54,7 +54,6 @@ class DownloadWorker(
             setForegroundAsync(createForegroundInfo(downloadedCount, totalFiles))
         }
 
-        markFilesAsDownloaded(context)
 
         showFinalNotification(context, downloadedCount, totalFiles)
 
@@ -92,6 +91,7 @@ class DownloadWorker(
         }
 
         NotificationManagerCompat.from(context).notify(NOTIFICATION_ID+1, builder.build())
+        markFilesAsDownloaded(context)
     }
 
 

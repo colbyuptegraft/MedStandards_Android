@@ -1,7 +1,11 @@
 package com.colbycoapps.med_standarts.ui.about
 
 import android.Manifest
+import android.content.ActivityNotFoundException
+import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -22,6 +26,7 @@ import com.colbycoapps.med_standarts.R
 import com.colbycoapps.med_standarts.databinding.FragmentAboutBinding
 import com.colbycoapps.med_standarts.ui.Utils
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.play.core.review.ReviewManagerFactory
 
 
 private const val REQUEST_CODE_POST_NOTIFICATIONS = 111
@@ -50,6 +55,44 @@ class AboutFragment : Fragment() {
             }
         }
 
+        binding.buttonSupport.setOnClickListener {
+            val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
+                data = Uri.parse("mailto:")
+                putExtra(Intent.EXTRA_EMAIL, arrayOf("info@doc-apps.com"))
+                putExtra(Intent.EXTRA_SUBJECT, requireActivity().getString(R.string.app_name))
+            }
+            startActivity(emailIntent)
+        }
+
+        binding.buttonShare.setOnClickListener {
+            val appPackageName = requireContext().packageName
+            val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_SUBJECT, "Share the app")
+                putExtra(
+                    Intent.EXTRA_TEXT,
+                    "https://play.google.com/store/apps/details?$appPackageName"
+                )
+            }
+            startActivity(Intent.createChooser(shareIntent, "Share via"))
+        }
+
+        binding.buttonRate.setOnClickListener {
+            val manager = ReviewManagerFactory.create(requireActivity())
+            val request = manager.requestReviewFlow()
+
+            request.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val reviewInfo = task.result
+                    val flow = manager.launchReviewFlow(requireActivity(), reviewInfo)
+                    flow.addOnCompleteListener {
+                    }
+                } else {
+                    openPlayStore(requireActivity())
+                }
+            }
+        }
+
         binding.buttonAbout.setOnClickListener {
             Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_activity_main).navigate(R.id.action_navigation_about_to_navigation_about_app)
             requireActivity().findViewById<BottomNavigationView>(R.id.nav_view).visibility = View.GONE
@@ -68,6 +111,19 @@ class AboutFragment : Fragment() {
         requireActivity().findViewById<BottomNavigationView>(R.id.nav_view).visibility = View.VISIBLE
     }
 
+    fun openPlayStore(context: Context) {
+        val appPackageName = context.packageName
+        try {
+            // Відкриваємо Play Store
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$appPackageName"))
+            intent.setPackage("com.android.vending") // Вказуємо Play Store як цільовий додаток
+            context.startActivity(intent)
+        } catch (e: ActivityNotFoundException) {
+            // Якщо Play Store недоступний, відкриваємо браузер
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=$appPackageName"))
+            context.startActivity(intent)
+        }
+    }
 
 
     private fun requestNotificationPermission() {

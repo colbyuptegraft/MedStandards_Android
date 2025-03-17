@@ -6,13 +6,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.colbycoapps.med_standarts.R
 import com.colbycoapps.med_standarts.databinding.FragmentAirforseBinding
 import com.colbycoapps.med_standarts.ui.Utils
 import com.colbycoapps.med_standarts.ui.adapter.AirForceFileAdapter
 import com.colbycoapps.med_standarts.ui.pdfview.PdfViewerActivity
+import com.google.firebase.storage.StorageReference
 
 class AirForceFragment : Fragment(), AirForceFileAdapter.OnFileClickListener {
 
@@ -26,8 +30,17 @@ class AirForceFragment : Fragment(), AirForceFileAdapter.OnFileClickListener {
         setupRecyclerView()
         setupObservers()
 
-        if(!Utils.storage)
+        if(!Utils.storage) {
+//            val afFilesMap2: MutableMap<String, MutableList<StorageReference>> = mutableMapOf()
+//            afFilesMap2["main"] = Utils.afFilesMap["main"]!!
+//            afFilesMap2["bomc"] = Utils.afFilesMap["bomc"]!!
+//            afFilesMap2["fsToolkit"] = Utils.afFilesMap["fsToolkit"]!!
+//            afFilesMap2["AFIs"] = Utils.afFilesMap["AFIs"]!!
+//            afFilesMap2["RSVs"] = Utils.afFilesMap["RSVs"]!!
+
+//            Utils.afFilesMap = afFilesMap2
             viewModel.loadFiles()
+        }
         else
             viewModel.loadFolderStorage(requireActivity())
 
@@ -39,6 +52,10 @@ class AirForceFragment : Fragment(), AirForceFileAdapter.OnFileClickListener {
             {
                 viewModel.loadFolderStorage(requireActivity())
             }
+            val actionBar = (requireActivity() as AppCompatActivity).supportActionBar
+            actionBar?.setDisplayHomeAsUpEnabled(false)
+            actionBar?.setDisplayShowHomeEnabled(false)
+            actionBar?.title = getString(R.string.title_airforse)
         }
 
         return binding.root
@@ -52,11 +69,15 @@ class AirForceFragment : Fragment(), AirForceFileAdapter.OnFileClickListener {
 
     private fun setupObservers() {
         viewModel.filesAndFolders.observe(viewLifecycleOwner) { list ->
-            if(!Utils.storage)
+
+            if(!Utils.storage) {
+                //val sortedList = list.sortedBy { it.first }
                 adapter.updateItems(list)
+            }
         }
 
         viewModel.filesAndFoldersStorage.observe(viewLifecycleOwner) { list ->
+            //val sortedList = list.sortedBy { it.first }
             adapter.updateItems(list)
         }
     }
@@ -71,6 +92,18 @@ class AirForceFragment : Fragment(), AirForceFileAdapter.OnFileClickListener {
             {
                 viewModel.loadFilesFolderStorage(requireActivity(), itemName)
             }
+            val actionBar = (requireActivity() as AppCompatActivity).supportActionBar
+            actionBar?.setDisplayHomeAsUpEnabled(true)
+            actionBar?.setDisplayShowHomeEnabled(true)
+            when(itemName)
+            {
+                "AFIs" ->  actionBar?.title = "Other AFIs"
+                "bomc" ->  actionBar?.title = "BOMC"
+                "fsToolkit" ->  actionBar?.title = "Flight Surgeon Toolkit"
+                "main" ->  actionBar?.title = "Main Documents"
+                else -> actionBar?.title = itemName
+            }
+
         } else {
             // Це URL файлу
             val intent = if(!Utils.storage)Intent(requireContext(), PdfViewerActivity::class.java).apply {

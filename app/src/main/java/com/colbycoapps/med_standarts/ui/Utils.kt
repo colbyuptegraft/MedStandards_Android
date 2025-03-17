@@ -10,7 +10,7 @@ import com.google.firebase.storage.StorageReference
 
 object Utils {
     val filesMap: MutableMap<String, MutableList<StorageReference>> = mutableMapOf()
-    val afFilesMap: MutableMap<String, MutableList<StorageReference>> = mutableMapOf()
+    var afFilesMap: MutableMap<String, MutableList<StorageReference>> = mutableMapOf()
     var storage = false
     var premium = false
 

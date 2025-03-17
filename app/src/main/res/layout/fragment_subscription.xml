@@ -56,7 +56,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_subs" />
+        app:srcCompat="@drawable/img" />
 
     <TextView
         android:id="@+id/textView3"
@@ -90,7 +90,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="15dp"
-        android:text="One month free trial"
+        android:text="Enjoy full app functionality for the first 10 documents for free, including search capabilities"
         android:textColor="#fff"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="@+id/imageView4"
@@ -104,7 +104,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="15dp"
-        android:text="Paid tier has unlimited document views "
+        android:text="Paid tier provides unlimited document views and search access"
         android:textColor="#fff"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="@+id/imageView5"
@@ -118,13 +118,28 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="15dp"
-        android:text="Free tier document views are limited to 5 documents per month"
+        android:text="Ability to search within PDF files"
         android:textColor="#fff"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="@+id/imageView6"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imageView6"
         app:layout_constraintTop_toTopOf="@+id/imageView6" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="15dp"
+        android:text="Premium: Ability to search PDF files"
+        android:textColor="#fff"
+        android:textSize="14sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView7"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imageView7"
+        app:layout_constraintTop_toTopOf="@+id/imageView7" />
 
     <ImageView
         android:id="@+id/imageView4"
@@ -154,6 +169,17 @@
         android:layout_marginTop="20dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView5"
+        app:srcCompat="@drawable/ic_subs_item" />
+
+    <ImageView
+        android:id="@+id/imageView7"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView6"
         app:srcCompat="@drawable/ic_subs_item" />
 
     <com.github.nikartm.button.FitButton

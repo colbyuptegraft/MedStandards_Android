@@ -15,4 +15,21 @@
         android:textColor="@android:color/black"
         android:textSize="16sp"
         tools:text="File" />
+
+    <TextView
+        android:id="@+id/fileDescr"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:textColor="#8C8C8C"
+        android:textSize="16sp"
+        tools:text="File" />
+
+    <View
+        android:id="@+id/viewFile"
+        android:layout_width="match_parent"
+        android:background="#808C8C8C"
+        android:layout_marginTop="8dp"
+        android:layout_height="1dp" />
 </LinearLayout>

@@ -2,36 +2,62 @@ var pdfDoc = null;
 
 function createPage() {
     var canvas = document.createElement("canvas");
+    canvas.style.display = "block"; // Уникнення зайвих пробілів
+    canvas.style.margin = "auto"; // Центрування
+
     document.body.appendChild(canvas);
     return canvas;
 }
 
 function renderPage(num) {
     pdfDoc.getPage(num).then(function (page) {
-        var viewport = page.getViewport({ scale: 2.0 });
+        var screenWidth = window.innerWidth; // Отримуємо ширину екрану
+        var viewport = page.getViewport({ scale: 1 }); // Масштаб 1 для отримання розмірів
+
+        var scale = screenWidth / viewport.width; // Динамічний масштаб для підлаштування під ширину екрана
+        viewport = page.getViewport({ scale: scale });
+
         var canvas = createPage();
         var ctx = canvas.getContext('2d');
 
-        canvas.height = viewport.height;
-        canvas.width = viewport.width;
+        var outputScale = Math.min(window.devicePixelRatio || 1, 2); // Обмежуємо до 2x
+        canvas.width = Math.floor(viewport.width * outputScale);
+        canvas.height = Math.floor(viewport.height * outputScale);
+        canvas.style.width = Math.floor(viewport.width) + "px";
+        canvas.style.height = Math.floor(viewport.height) + "px";
 
-        page.render({
+        var renderContext = {
             canvasContext: ctx,
-            viewport: viewport
-        }).promise.then(() => {});
+            viewport: viewport,
+            transform: [outputScale, 0, 0, outputScale, 0, 0] // Чіткість тексту
+        };
+
+        page.render(renderContext).promise.then(() => {
+            console.log(`Page ${num} rendered at ${outputScale}x scale`);
+        });
     });
 }
 
+
+
+
 function scrollToPage(pageIndex) {
     const canvasList = document.getElementsByTagName("canvas");
-    if (pageIndex < 0 || pageIndex >= canvasList.length) {
-        return;
-    }
+
+    if (pageIndex < 0 || pageIndex >= canvasList.length) return;
+
     const targetCanvas = canvasList[pageIndex];
-    if (targetCanvas) {
-        targetCanvas.scrollIntoView({ behavior: "smooth" });
-    }
+
+    // Використовуємо getBoundingClientRect(), щоб отримати точну позицію
+    const topOffset = targetCanvas.getBoundingClientRect().top + window.scrollY;
+
+    window.scrollTo({
+        top: topOffset,
+        behavior: "smooth"
+    });
 }
+
+
 
 function scrollToWord(x, y) {
     window.scrollTo({
@@ -41,21 +67,20 @@ function scrollToWord(x, y) {
     });
 }
 
-// Оновлений метод для розшифрування Base64
 function receivePDF(base64String) {
     console.log("Отримано Base64 PDF");
 
     try {
-        // Перетворюємо Base64 у бінарні дані
         var binaryString = atob(base64String);
         var bytes = new Uint8Array(binaryString.length);
         for (var i = 0; i < binaryString.length; i++) {
             bytes[i] = binaryString.charCodeAt(i);
         }
 
-        // Завантажуємо PDF у pdf.js
         pdfjsLib.getDocument({ data: bytes.buffer }).promise.then(function (pdf) {
             pdfDoc = pdf;
+            document.body.innerHTML = ""; // Очищення перед рендерингом
+
             for (var i = 1; i <= pdfDoc.numPages; i++) {
                 renderPage(i);
             }
