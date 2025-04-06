@@ -5,12 +5,11 @@
     "storage_bucket": "med-standards-f4e97.firebasestorage.app"
   },
   "client": [
-
     {
       "client_info": {
-        "mobilesdk_app_id": "1:512835118808:android:0d45628b030fa5ab7099ad",
+        "mobilesdk_app_id": "1:512835118808:android:01693db9dbb3fc267099ad",
         "android_client_info": {
-          "package_name": "com.colbycoapps.med_standarts"
+          "package_name": "com.colbycoapps.med_standards"
         }
       },
       "oauth_client": [],
@@ -26,10 +25,5 @@
       }
     }
   ],
-  "app_check": {
-    "default_web": {
-      "enabled": false
-    }
-  },
   "configuration_version": "1"
 }

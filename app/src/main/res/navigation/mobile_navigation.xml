@@ -7,31 +7,31 @@
 
     <fragment
         android:id="@+id/navigation_airfose"
-        android:name="com.colbycoapps.med_standarts.ui.airforse.AirForceFragment"
+        android:name="com.colbycoapps.med_standards.ui.airforse.AirForceFragment"
         android:label="@string/title_airforse"
         tools:layout="@layout/fragment_airforse" />
 
     <fragment
         android:id="@+id/navigation_army"
-        android:name="com.colbycoapps.med_standarts.ui.army.ArmyFragment"
+        android:name="com.colbycoapps.med_standards.ui.army.ArmyFragment"
         android:label="@string/title_army"
         tools:layout="@layout/fragment_army" />
 
     <fragment
         android:id="@+id/navigation_navy"
-        android:name="com.colbycoapps.med_standarts.ui.navy.NavyFragment"
+        android:name="com.colbycoapps.med_standards.ui.navy.NavyFragment"
         android:label="@string/title_navy"
         tools:layout="@layout/fragment_navy" />
 
     <fragment
         android:id="@+id/navigation_dod"
-        android:name="com.colbycoapps.med_standarts.ui.dod.DodFragment"
+        android:name="com.colbycoapps.med_standards.ui.dod.DodFragment"
         android:label="@string/title_dod"
         tools:layout="@layout/fragment_dod" />
 
     <fragment
         android:id="@+id/navigation_about"
-        android:name="com.colbycoapps.med_standarts.ui.about.AboutFragment"
+        android:name="com.colbycoapps.med_standards.ui.about.AboutFragment"
         android:label="@string/title_about"
         tools:layout="@layout/fragment_about" >
         <action
@@ -44,12 +44,12 @@
 
     <fragment
         android:id="@+id/navigation_subscriptin"
-        android:name="com.colbycoapps.med_standarts.ui.about.SubscriptionFragment"
+        android:name="com.colbycoapps.med_standards.ui.about.SubscriptionFragment"
         android:label="Subscription plan"
         tools:layout="@layout/fragment_subscription" />
     <fragment
         android:id="@+id/navigation_about_app"
-        android:name="com.colbycoapps.med_standarts.ui.about.AboutAppFragment"
+        android:name="com.colbycoapps.med_standards.ui.about.AboutAppFragment"
         android:label="@string/title_about"
         tools:layout="@layout/fragment_about_app" />
 </navigation>

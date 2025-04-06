@@ -1,0 +1,64 @@
+package com.colbycoapps.med_standards.ui.army
+
+import android.content.Context
+import android.net.Uri
+import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import com.colbycoapps.med_standards.ui.Utils
+
+class ArmyViewModel : ViewModel() {
+
+    private val _files = MutableLiveData<List<Pair<String, String>>>()
+    val files: LiveData<List<Pair<String, String>>> = _files
+
+    private val _filesStorage = MutableLiveData<List<Pair<String, String>>>()
+    val filesStorage: LiveData<List<Pair<String, String>>> = _filesStorage
+
+    fun loadFiles() {
+        val armyFiles = Utils.filesMap["army"] ?: emptyList()
+
+        if (armyFiles.isNotEmpty()) {
+            val fileList = mutableListOf<Pair<String, String>>()
+
+            armyFiles.forEach { storageRef ->
+                storageRef.downloadUrl.addOnSuccessListener { uri ->
+                    val fileName = Uri.decode(storageRef.name).replace(".pdf", "")
+                    fileList.add(Pair(fileName, uri.toString()))
+
+                    if (fileList.size == armyFiles.size) {
+                        // 📌 Сортуємо список за алфавітом
+                        fileList.sortBy { it.first.lowercase() }
+                        _files.postValue(fileList)
+                    }
+                }.addOnFailureListener {
+                    Log.e("Firebase", "❌ Помилка отримання URL", it)
+                }
+            }
+        } else {
+            Log.e("Firebase", "❌ Файли у папці 'army' відсутні!")
+        }
+    }
+
+    fun loadFilesStorage(context: Context) {
+        val result = mutableListOf<Pair<String, String>>()
+        val rootDir = context.getExternalFilesDir("pdfs/army")
+
+        if (rootDir != null && rootDir.exists() && rootDir.isDirectory) {
+            // Зчитуємо всі .pdf-файли
+            val files = rootDir.listFiles()?.filter {
+                it.isFile && it.extension.equals("pdf", ignoreCase = true)
+            } ?: emptyList()
+
+            // Формуємо список (назва без .pdf, Uri)
+            files.forEach { file ->
+                val fileName = file.nameWithoutExtension  // назва без .pdf
+                val fileUri = Uri.fromFile(file)          // Uri для відкриття
+                result.add(fileName to fileUri.toString())
+            }
+        }
+        _filesStorage.value = result
+
+    }
+}

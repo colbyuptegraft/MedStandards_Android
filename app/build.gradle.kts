@@ -5,15 +5,15 @@ plugins {
 }
 
 android {
-    namespace = "com.colbycoapps.med_standarts"
+    namespace = "com.colbycoapps.med_standards"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.colbycoapps.med_standarts"
+        applicationId = "com.colbycoapps.med_standards"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "2.0"
+        versionCode = 146022
+        versionName = "2.0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true
@@ -63,6 +63,8 @@ dependencies {
     implementation("io.github.nikartm:fit-button:2.0.0")
     implementation("com.android.billingclient:billing:7.1.1")
     implementation("com.google.android.play:review:2.0.2")
+    implementation("com.google.firebase:firebase-inappmessaging-display")
+    implementation("com.google.firebase:firebase-analytics")
 //    implementation("com.github.chrisbanes:PhotoView:2.3.0")
 //    implementation("com.pdftron:pdftron:11.0.0")
     //implementation("com.pdftron:pdftron-standard:11.0.0")

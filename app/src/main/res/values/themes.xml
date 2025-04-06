@@ -9,11 +9,8 @@
         <item name="colorSecondary">@color/airForce</item>
         <item name="colorSecondaryVariant">@color/airForce</item>
         <item name="colorOnSecondary">@color/airForce</item>
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor">@color/airForce</item>
-        <!-- Customize your theme here. -->
-        <item name="android:windowTranslucentStatus">false</item>
-        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+
+
     </style>
 
     <style name="WhiteActionBarTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
