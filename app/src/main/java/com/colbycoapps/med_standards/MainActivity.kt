@@ -98,7 +98,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateColors(colorRes: Int) {
         val color = ContextCompat.getColor(this, colorRes)
-        supportActionBar?.setBackgroundDrawable(ColorDrawable(color)) // Змінюємо AppBar
+        supportActionBar?.setBackgroundDrawable(ColorDrawable(color))
         WindowCompat.getInsetsController(window, window.decorView).isAppearanceLightStatusBars = false
         window.statusBarColor = color
         binding.viewBg.setBackgroundColor(color)

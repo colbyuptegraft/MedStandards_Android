@@ -8,11 +8,9 @@ class SearchTextStripper : PDFTextStripper() {
 
     data class LineInfo(val text: String, val positions: List<TextPosition>)
 
-    // Збираємо кожен рядок разом із позиціями символів
     val lines = mutableListOf<LineInfo>()
 
     init {
-        // Якщо потрібно – увімкніть сортування позицій
         sortByPosition = true
     }
 

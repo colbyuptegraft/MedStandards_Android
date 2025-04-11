@@ -52,7 +52,7 @@ class SplashActivity : AppCompatActivity() {
                     Utils.countFree = 10
                     Utils.premium = true
                 } else {
-                    // Немає активної підписки – наприклад, переходимо на екран з підпискою
+
                 }
             }
         }
@@ -91,7 +91,6 @@ class SplashActivity : AppCompatActivity() {
 
         billingClient.startConnection(object : BillingClientStateListener {
             override fun onBillingServiceDisconnected() {
-                // Спробуйте повторно підключитися або повернути false
                 onResult(false)
             }
 

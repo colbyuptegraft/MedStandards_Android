@@ -28,16 +28,15 @@ class DodViewModel : ViewModel() {
                     fileList.add(Pair(fileName, uri.toString()))
 
                     if (fileList.size == armyFiles.size) {
-                        // 📌 Сортуємо список за алфавітом
                         fileList.sortBy { it.first.lowercase() }
                         _files.postValue(fileList)
                     }
                 }.addOnFailureListener {
-                    Log.e("Firebase", "❌ Помилка отримання URL", it)
+                    Log.e("Firebase", "Помилка отримання URL", it)
                 }
             }
         } else {
-            Log.e("Firebase", "❌ Файли у папці 'army' відсутні!")
+            Log.e("Firebase", "Файли у папці 'army' відсутні!")
         }
     }
 
@@ -46,15 +45,13 @@ class DodViewModel : ViewModel() {
         val rootDir = context.getExternalFilesDir("pdfs/dod")
 
         if (rootDir != null && rootDir.exists() && rootDir.isDirectory) {
-            // Зчитуємо всі .pdf-файли
             val files = rootDir.listFiles()?.filter {
                 it.isFile && it.extension.equals("pdf", ignoreCase = true)
             } ?: emptyList()
 
-            // Формуємо список (назва без .pdf, Uri)
             files.forEach { file ->
-                val fileName = file.nameWithoutExtension  // назва без .pdf
-                val fileUri = Uri.fromFile(file)          // Uri для відкриття
+                val fileName = file.nameWithoutExtension
+                val fileUri = Uri.fromFile(file)
                 result.add(fileName to fileUri.toString())
             }
         }

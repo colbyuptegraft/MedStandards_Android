@@ -25,7 +25,7 @@ class AirForceViewModel : ViewModel() {
         val storageRefs = Utils.afFilesMap[path] ?: emptyList()
 
         if (storageRefs.isEmpty()) {
-            Log.e("Firebase", "❌ Папка '$path' порожня!")
+            Log.e("Firebase", "Папка '$path' порожня!")
             _filesAndFolders.postValue(emptyList())
             return
         }
@@ -38,7 +38,6 @@ class AirForceViewModel : ViewModel() {
             if (path == "af") {
                 folderList.add(ref.name)
             } else {
-                // Інакше вважаємо, що це файл
                 fileList.add(Pair(ref.name, "pending_url"))
             }
         }
@@ -48,7 +47,6 @@ class AirForceViewModel : ViewModel() {
         fileList.forEachIndexed { i, (rawName, _) ->
             val fileRef = storageRefs.find { it.name == rawName }
             fileRef?.downloadUrl?.addOnSuccessListener { uri ->
-                // Видаляємо ".pdf" для гарної назви
                 val displayName = rawName.replace(".pdf", "")
                 fileList[i] = Pair(displayName, uri.toString())
 

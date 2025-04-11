@@ -29,9 +29,9 @@ class SubscriptionFragment : Fragment() {
                 handlePurchase(purchase)
             }
         } else if (billingResult.responseCode == BillingClient.BillingResponseCode.USER_CANCELED) {
-            // користувач скасував
+
         } else {
-            // інша помилка
+
         }
     }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -49,16 +49,16 @@ class SubscriptionFragment : Fragment() {
     private fun setupBillingClient(context: Context) {
         billingClient = BillingClient.newBuilder(context)
             .setListener(purchasesUpdatedListener)
-            .enablePendingPurchases() // обов’язково для Billing Library 2.0+
+            .enablePendingPurchases()
             .build()
         billingClient.startConnection(object : BillingClientStateListener {
             override fun onBillingServiceDisconnected() {
-                // Спробуйте повторно підключитися
+
             }
 
             override fun onBillingSetupFinished(billingResult: BillingResult) {
                 if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                    // Готові запитувати покупки, SKU details, тощо.
+
                 }
             }
         })

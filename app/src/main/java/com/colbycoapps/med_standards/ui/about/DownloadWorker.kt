@@ -33,7 +33,7 @@ class DownloadWorker(
         val context = applicationContext
 
         val fileList = gatherAllFileReferences()
-        removeObsoleteFiles(fileList) // Видаляємо застарілі файли
+        removeObsoleteFiles(fileList)
 
         var totalFiles = fileList.size
         var downloadedCount = 0
@@ -84,9 +84,9 @@ class DownloadWorker(
             .setPriority(NotificationCompat.PRIORITY_HIGH)
 
         if (max < 10) {
-            builder.setContentText("Updated $progress з $max files")
+            builder.setContentText("Updated $progress of $max files")
         } else {
-            builder.setContentText("Downloaded $progress з $max files")
+            builder.setContentText("Downloaded $progress of $max files")
         }
 
         NotificationManagerCompat.from(context).notify(NOTIFICATION_ID+1, builder.build())

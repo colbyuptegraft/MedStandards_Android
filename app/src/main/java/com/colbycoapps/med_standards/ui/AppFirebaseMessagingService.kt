@@ -20,7 +20,6 @@ class AppFirebaseMessagingService : FirebaseMessagingService() {
     }
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
-        // Перевіряємо чи повідомлення містить payload із сповіщенням
         remoteMessage.notification?.let {
             val title = it.title ?: ""
             val body = it.body ?: ""
@@ -44,7 +43,6 @@ class AppFirebaseMessagingService : FirebaseMessagingService() {
             else PendingIntent.FLAG_ONE_SHOT
         )
 
-        // Створюємо NotificationCompat.Builder
         val builder = NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.img) // Замініть на свою іконку
             .setContentTitle(title)
@@ -53,7 +51,6 @@ class AppFirebaseMessagingService : FirebaseMessagingService() {
             .setContentIntent(pendingIntent)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
 
-        // Створюємо NotificationChannel, якщо Android O+
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
@@ -66,7 +63,6 @@ class AppFirebaseMessagingService : FirebaseMessagingService() {
             notificationManager.createNotificationChannel(channel)
         }
 
-        // Відображаємо сповіщення
         notificationManager.notify(0, builder.build())
     }
 }

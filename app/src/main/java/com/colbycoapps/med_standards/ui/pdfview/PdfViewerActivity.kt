@@ -199,8 +199,7 @@ class PdfViewerActivity : AppCompatActivity() {
         return if (uri.scheme.equals("file", ignoreCase = true)) {
             File(uri.path ?: "")
         } else if (uri.scheme.equals("content", ignoreCase = true)) {
-            // Створюємо тимчасовий файл у cache директорії
-            val fileName = "temp_pdf_file.pdf" // Можна розширити логіку для отримання оригінальної назви
+            val fileName = "temp_pdf_file.pdf"
             val tempFile = File(context.cacheDir, fileName)
             context.contentResolver.openInputStream(uri)?.use { input ->
                 tempFile.outputStream().use { output ->
@@ -215,8 +214,8 @@ class PdfViewerActivity : AppCompatActivity() {
 
     private fun updateColors(colorRes: Int) {
         val color = ContextCompat.getColor(this, colorRes)
-        supportActionBar?.setBackgroundDrawable(ColorDrawable(color)) // Змінюємо AppBar
-        window.statusBarColor = color // Змінюємо статусбар
+        supportActionBar?.setBackgroundDrawable(ColorDrawable(color))
+        window.statusBarColor = color
         binding.viewBg.setBackgroundColor(color)
     }
 
@@ -249,15 +248,12 @@ class PdfViewerActivity : AppCompatActivity() {
 
         CoroutineScope(Dispatchers.IO).launch {
             pdfFile?.let { file ->
-                // 🔥 1. Перенумерація сторінок
                 val newPdfFile = renumberAndSavePdf(file)
                 val document = PDDocument.load(newPdfFile)
 
-                // 🔥 2. Пошук за оновленою нумерацією
                 val highlightMap: Map<Int, List<QuadInfo>> = findTextPositions(document, query)
                 addHighlightAnnotations(document, highlightMap)
 
-                // 🔥 3. Збереження нового PDF із анотаціями
                 val finalFile = File(cacheDir, "highlighted.pdf")
                 document.use { it.save(finalFile) }
                 document.close()
@@ -307,10 +303,8 @@ class PdfViewerActivity : AppCompatActivity() {
             Log.d("BASE64", "Перші 100 символів: ${base64String.take(100)}")
 
             binding.webView.loadUrl("about:blank")
-            // Завантажуємо HTML
             binding.webView.loadUrl("file:///android_asset/index.html")
 
-            // Додаємо невеликий delay перед передачею Base64
             CoroutineScope(Dispatchers.Main).launch {
                 delay(1000) // Затримка на 0.5 секунди
                 binding.webView.evaluateJavascript("receivePDF('$base64String')", null)
@@ -367,7 +361,7 @@ class PdfViewerActivity : AppCompatActivity() {
         }
 
         searchView?.setOnCloseListener {
-            searchItem.collapseActionView() // Закриває поле пошуку
+            searchItem.collapseActionView()
             true
         }
 
@@ -401,7 +395,7 @@ class PdfViewerActivity : AppCompatActivity() {
             startPage = pageIndex + 1
             endPage = pageIndex + 1
         }
-        return stripper.getText(document).trim() // Видаляємо зайві пробіли
+        return stripper.getText(document).trim()
     }
 
 

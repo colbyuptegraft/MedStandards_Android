@@ -26,7 +26,7 @@ class AirForceFileAdapter(
     override fun onBindViewHolder(holder: FileViewHolder, position: Int) {
         val (itemName, itemValue) = items[position]
 
-        holder.fileDescr.visibility = View.GONE // Очистка перед новими даними
+        holder.fileDescr.visibility = View.GONE
 
         if (itemValue == "folder") {
             when(itemName)
