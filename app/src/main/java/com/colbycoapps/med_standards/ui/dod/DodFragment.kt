@@ -8,11 +8,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.colbycoapps.med_standards.R
 import com.colbycoapps.med_standards.databinding.FragmentDodBinding
 import com.colbycoapps.med_standards.ui.Utils
 import com.colbycoapps.med_standards.ui.adapter.FileAdapter
 import com.colbycoapps.med_standards.ui.pdfview.PdfViewerActivity
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class DodFragment : Fragment(), FileAdapter.OnFileClickListener {
 
@@ -61,9 +64,17 @@ class DodFragment : Fragment(), FileAdapter.OnFileClickListener {
         } else
         {
             val builder = AlertDialog.Builder(context)
-            builder.setTitle("Subscription plan")
-            builder.setMessage("The number of free views has been exhausted! You must subscribe to view.!")
-            builder.setPositiveButton("OK") { dialog, _ ->
+            builder.setTitle("Subscription Required")
+            builder.setMessage("You've exhausted the number of free documents views! You must subscribe to view any additional documents.")
+            builder.setPositiveButton("Subscribe Now") { dialog, _ ->
+                val navController = requireActivity().findNavController(R.id.nav_host_fragment_activity_main)
+                val navView = requireActivity().findViewById<BottomNavigationView>(R.id.nav_view)
+                navView.selectedItemId = navView.menu.getItem(4).itemId
+                navView.visibility = View.GONE
+                navController.navigate(R.id.navigation_subscriptin)
+                dialog.dismiss()
+            }
+            builder.setNegativeButton("Close"){ dialog, _ ->
                 dialog.dismiss()
             }
             val alertDialog = builder.create()

@@ -41,6 +41,7 @@ class AboutFragment : Fragment() {
 
         if(Utils.premium)
             binding.buttonSubs.visibility = View.GONE
+
         binding.button.setOnClickListener {
             if(Utils.filesMap.isNotEmpty() && Utils.afFilesMap.isNotEmpty() && Utils.isInternetAvailable(requireActivity())) {
                 requestNotificationPermission()

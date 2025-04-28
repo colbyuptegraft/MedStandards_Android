@@ -14,7 +14,7 @@ object Utils {
     var afFilesMap: MutableMap<String, MutableList<StorageReference>> = mutableMapOf()
     var storage = false
     var premium = false
-    var countFree = 10
+    var countFree = 0
     lateinit var sharedPreferences: SharedPreferences
 
     private fun listFilesWithPagination(folderRef: StorageReference, pageToken: String?) {
