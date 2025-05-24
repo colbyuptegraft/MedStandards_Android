@@ -35,7 +35,7 @@ class AboutFragment : Fragment() {
         binding = FragmentAboutBinding.inflate(inflater, container, false)
 
         if(Utils.storage) {
-            binding.button.setText("File Synchronization")
+            binding.button.setText("Sync Content")
             synchronization = true
         }
 
@@ -56,7 +56,7 @@ class AboutFragment : Fragment() {
             val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
                 data = Uri.parse("mailto:")
                 putExtra(Intent.EXTRA_EMAIL, arrayOf("info@doc-apps.com"))
-                putExtra(Intent.EXTRA_SUBJECT, requireActivity().getString(R.string.app_name))
+                putExtra(Intent.EXTRA_SUBJECT, "${requireActivity().getString(R.string.app_name)} - Android")
             }
             startActivity(emailIntent)
         }

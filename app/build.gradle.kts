@@ -12,8 +12,8 @@ android {
         applicationId = "com.colbycoapps.med_standards"
         minSdk = 26
         targetSdk = 35
-        versionCode = 146024
-        versionName = "2.0.3"
+        versionCode = 146025
+        versionName = "2.0.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true
