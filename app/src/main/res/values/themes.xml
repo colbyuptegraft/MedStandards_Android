@@ -14,12 +14,12 @@
     </style>
 
     <style name="WhiteActionBarTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="android:textColorPrimary">#FFFFFF</item> <!-- Колір тексту -->
-        <item name="android:textColorSecondary">#FFFFFF</item> <!-- Колір підзаголовків -->
-        <item name="android:textColorHint">#DDDDDD</item> <!-- Колір підказки у SearchView -->
-        <item name="android:colorControlNormal">#FFFFFF</item> <!-- Колір іконок -->
-        <item name="android:colorControlActivated">#FFFFFF</item> <!-- Колір активних іконок -->
-        <item name="android:colorControlHighlight">#FFFFFF</item> <!-- Колір натискань -->
+        <item name="android:textColorPrimary">#FFFFFF</item> <!-- Text color -->
+        <item name="android:textColorSecondary">#FFFFFF</item> <!-- Subtitle color -->
+        <item name="android:textColorHint">#DDDDDD</item> <!-- Hint color in SearchView -->
+        <item name="android:colorControlNormal">#FFFFFF</item> <!-- Icon color -->
+        <item name="android:colorControlActivated">#FFFFFF</item> <!-- Color of active icons -->
+        <item name="android:colorControlHighlight">#FFFFFF</item> <!-- Color of clicks -->
     </style>
 
 

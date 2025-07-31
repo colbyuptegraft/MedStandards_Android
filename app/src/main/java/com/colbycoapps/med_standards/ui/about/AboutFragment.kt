@@ -111,12 +111,12 @@ class AboutFragment : Fragment() {
     fun openPlayStore(context: Context) {
         val appPackageName = context.packageName
         try {
-            // Відкриваємо Play Store
+            // Open Play Store
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$appPackageName"))
-            intent.setPackage("com.android.vending") // Вказуємо Play Store як цільовий додаток
+            intent.setPackage("com.android.vending") // Specify Play Store as target app
             context.startActivity(intent)
         } catch (e: ActivityNotFoundException) {
-            // Якщо Play Store недоступний, відкриваємо браузер
+            // If Play Store is unavailable, open browser
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=$appPackageName"))
             context.startActivity(intent)
         }

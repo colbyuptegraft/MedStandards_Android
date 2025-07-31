@@ -32,11 +32,11 @@ class NavyViewModel : ViewModel() {
                         _files.postValue(fileList)
                     }
                 }.addOnFailureListener {
-                    Log.e("Firebase", "Помилка отримання URL", it)
+                    Log.e("Firebase", "Error reived URL", it)
                 }
             }
         } else {
-            Log.e("Firebase", "Файли у папці 'army' відсутні!")
+            Log.e("Firebase", "There are no files in folder 'army'!")
         }
     }
 
@@ -45,7 +45,7 @@ class NavyViewModel : ViewModel() {
         val rootDir = context.getExternalFilesDir("pdfs/navy")
 
         if (rootDir != null && rootDir.exists() && rootDir.isDirectory) {
-            // Зчитуємо всі .pdf-файли
+            // Read all .pdf files
             val files = rootDir.listFiles()?.filter {
                 it.isFile && it.extension.equals("pdf", ignoreCase = true)
             } ?: emptyList()

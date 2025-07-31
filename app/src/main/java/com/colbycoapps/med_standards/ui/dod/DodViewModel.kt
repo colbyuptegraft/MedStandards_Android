@@ -32,11 +32,11 @@ class DodViewModel : ViewModel() {
                         _files.postValue(fileList)
                     }
                 }.addOnFailureListener {
-                    Log.e("Firebase", "Помилка отримання URL", it)
+                    Log.e("Firebase", "Recieved error URL", it)
                 }
             }
         } else {
-            Log.e("Firebase", "Файли у папці 'army' відсутні!")
+            Log.e("Firebase", "There are no files in folder 'army'!")
         }
     }
 

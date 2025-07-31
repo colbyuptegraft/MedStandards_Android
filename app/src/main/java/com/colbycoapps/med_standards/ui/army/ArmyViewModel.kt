@@ -32,11 +32,11 @@ class ArmyViewModel : ViewModel() {
                         _files.postValue(fileList)
                     }
                 }.addOnFailureListener {
-                    Log.e("Firebase", "Помилка отримання URL", it)
+                    Log.e("Firebase", "Recieved an error URL", it)
                 }
             }
         } else {
-            Log.e("Firebase", "Файли у папці 'army' відсутні!")
+            Log.e("Firebase", "There are no files in folder 'army'!")
         }
     }
 
@@ -50,8 +50,8 @@ class ArmyViewModel : ViewModel() {
             } ?: emptyList()
 
             files.forEach { file ->
-                val fileName = file.nameWithoutExtension  // назва без .pdf
-                val fileUri = Uri.fromFile(file)          // Uri для відкриття
+                            val fileName = file.nameWithoutExtension  // name without .pdf
+            val fileUri = Uri.fromFile(file)          // Uri for opening
                 result.add(fileName to fileUri.toString())
             }
         }

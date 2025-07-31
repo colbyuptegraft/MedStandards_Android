@@ -59,8 +59,8 @@ data class QuadInfo(
 
 data class SearchResult(
     val pageIndex: Int,
-    val snippet: String,   // 3 слова перед + слово + 3 слова після
-    val matchText: String  // Саме слово, яке знайшли
+    val snippet: String,   // 3 words before + word + 3 words after
+    val matchText: String  // The actual word that was found
 )
 
 class PdfViewerActivity : AppCompatActivity() {
@@ -71,7 +71,7 @@ class PdfViewerActivity : AppCompatActivity() {
 
     private var pdfRenderer: PdfRenderer? = null
     private var parcelFileDescriptor: ParcelFileDescriptor? = null
-    private var searchResults = mutableListOf<SearchResult>() // Список знайдених результатів
+    private var searchResults = mutableListOf<SearchResult>() // List of found search results
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -112,7 +112,7 @@ class PdfViewerActivity : AppCompatActivity() {
                         ?.replace("PDFs/af/RSVs/", "")
                         ?.replace("PDFs/af/bomc/", "")
                         ?.replace("PDFs/af/fsToolkit/", "")
-                        ?.replace("PDFs/af/main/", "")!!.split("#")[0] ?: "PDF Viewer"
+                        ?.replace("PDFs/af/main/", "")?.split("#")?.get(0) ?: "PDF Viewer"
                 }
             }
             "army" -> {
@@ -122,7 +122,7 @@ class PdfViewerActivity : AppCompatActivity() {
                     supportActionBar?.title = pdfName.split("#")[0]
                 }
                 else {
-                    supportActionBar?.title = Uri.parse(pdfUrl).lastPathSegment?.replace("PDFs/army/", "")!!.split("#")[0] ?: "PDF Viewer"
+                    supportActionBar?.title = Uri.parse(pdfUrl).lastPathSegment?.replace("PDFs/army/", "")?.split("#")?.get(0) ?: "PDF Viewer"
                 }
 
             }
@@ -134,7 +134,7 @@ class PdfViewerActivity : AppCompatActivity() {
                     supportActionBar?.title = pdfName.split("#")[0]
                 }
                 else {
-                    supportActionBar?.title = Uri.parse(pdfUrl).lastPathSegment?.replace("PDFs/navy/", "")!!.split("#")[0] ?: "PDF Viewer"
+                    supportActionBar?.title = Uri.parse(pdfUrl).lastPathSegment?.replace("PDFs/navy/", "")?.split("#")?.get(0) ?: "PDF Viewer"
                 }
             }
             "dod" -> {
@@ -144,7 +144,7 @@ class PdfViewerActivity : AppCompatActivity() {
                     supportActionBar?.title = pdfName.split("#")[0]
                 }
                 else {
-                    supportActionBar?.title = Uri.parse(pdfUrl).lastPathSegment?.replace("PDFs/dod/", "")!!.split("#")[0] ?: "PDF Viewer"
+                    supportActionBar?.title = Uri.parse(pdfUrl).lastPathSegment?.replace("PDFs/dod/", "")?.split("#")?.get(0) ?: "PDF Viewer"
                 }
             }
             "about" -> {
@@ -165,9 +165,12 @@ class PdfViewerActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.IO).launch {
             if(!Utils.storage) {
                 pdfFile = if (pdfUrl.startsWith("http", ignoreCase = true)) {
-                    File(downloadPdfFile(pdfUrl).path!!)
+                    downloadPdfFile(pdfUrl)?.let { uri ->
+                        File(uri.path ?: throw Exception("Не удалось получить путь к файлу"))
+                    } ?: throw Exception("Ошибка скачивания файла")
                 } else {
-                    File(Uri.parse(pdfUrl).path!!)
+                    val path = Uri.parse(pdfUrl).path
+                    if (path != null) File(path) else throw Exception("Неверный путь к файлу")
                 }
                 withContext(Dispatchers.Main) {
                     loadPdfFromUri(pdfFile!!.toUri())
@@ -230,15 +233,54 @@ class PdfViewerActivity : AppCompatActivity() {
             javaScriptEnabled = true
             allowFileAccess = true
             allowContentAccess = true
-            setSupportZoom(true) // Дозволити масштабування
-            builtInZoomControls = true // Додати контролери масштабування
-            displayZoomControls = false // Приховати кнопки "+" і "-"
-            useWideViewPort = true // **Головне: Масштабує контент до ширини екрану**
-            loadWithOverviewMode = true // **Головне: Підганяє весь контент у WebView**
+            allowUniversalAccessFromFileURLs = true
+            allowFileAccessFromFileURLs = true
+            setSupportZoom(true)
+            builtInZoomControls = true
+            displayZoomControls = false
+            useWideViewPort = true
+            loadWithOverviewMode = true
+            cacheMode = android.webkit.WebSettings.LOAD_NO_CACHE // Disable cache for PDF
+            domStorageEnabled = true
+            databaseEnabled = true
+            // setAppCacheEnabled removed in newer APIs, using alternative settings
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                @Suppress("DEPRECATION")
+                setAppCacheEnabled(false)
+            }
         }
 
-        binding.webView.webViewClient = WebViewClient()
-        binding.webView.webChromeClient = WebChromeClient()
+        binding.webView.webViewClient = object : WebViewClient() {
+            override fun onPageFinished(view: android.webkit.WebView?, url: String?) {
+                super.onPageFinished(view, url)
+                Log.d("WebView", "Page finished loading: $url")
+            }
+            
+            override fun onReceivedError(
+                view: android.webkit.WebView?,
+                request: android.webkit.WebResourceRequest?,
+                error: android.webkit.WebResourceError?
+            ) {
+                super.onReceivedError(view, request, error)
+                Log.e("WebView", "Error loading page: ${error?.description}")
+            }
+        }
+        
+        binding.webView.webChromeClient = object : WebChromeClient() {
+            override fun onProgressChanged(view: android.webkit.WebView?, newProgress: Int) {
+                super.onProgressChanged(view, newProgress)
+                Log.d("WebView", "Loading progress: $newProgress%")
+            }
+            
+            override fun onConsoleMessage(consoleMessage: android.webkit.ConsoleMessage?): Boolean {
+                Log.d("WebView-Console", "${consoleMessage?.message()} -- From line ${consoleMessage?.lineNumber()} of ${consoleMessage?.sourceId()}")
+                return true
+            }
+        }
+    }
+
+    private fun setAppCacheEnabled(b: Boolean) {
+
     }
 
 
@@ -294,21 +336,35 @@ class PdfViewerActivity : AppCompatActivity() {
     }
 
     private fun loadPdfFromUri(uri: Uri) {
+        Log.d("PDF_LOAD", "Starting PDF load from URI: $uri")
         val inputStream: InputStream? = contentResolver.openInputStream(uri)
         inputStream?.use { stream ->
             val bytes = stream.readBytes()
-            val base64String = Base64.encodeToString(bytes, Base64.NO_WRAP) // ✅ Уникнення \n
+            val base64String = Base64.encodeToString(bytes, Base64.NO_WRAP)
 
-            Log.d("BASE64", "Base64 довжина: ${base64String.length}")
-            Log.d("BASE64", "Перші 100 символів: ${base64String.take(100)}")
+            Log.d("PDF_LOAD", "PDF file size: ${bytes.size} bytes")
+            Log.d("PDF_LOAD", "Base64 length: ${base64String.length}")
+            Log.d("PDF_LOAD", "First 100 characters: ${base64String.take(100)}")
 
             binding.webView.loadUrl("about:blank")
             binding.webView.loadUrl("file:///android_asset/index.html")
 
             CoroutineScope(Dispatchers.Main).launch {
-                delay(1000) // Затримка на 0.5 секунди
-                binding.webView.evaluateJavascript("receivePDF('$base64String')", null)
-                progressDialog.dismiss()
+                binding.webView.post {
+                    // Check WebView readiness
+                    if (binding.webView.progress == 100) {
+                        binding.webView.evaluateJavascript("receivePDF('$base64String')", null)
+                        // Dismiss progress dialog immediately after sending PDF to WebView
+                        progressDialog.dismiss()
+                    } else {
+                        // If WebView is not ready yet, wait a bit and retry
+                        CoroutineScope(Dispatchers.Main).launch {
+                            delay(500)
+                            binding.webView.evaluateJavascript("receivePDF('$base64String')", null)
+                            progressDialog.dismiss()
+                        }
+                    }
+                }
             }
         }
 
@@ -342,8 +398,19 @@ class PdfViewerActivity : AppCompatActivity() {
 
     private fun scrollToWord(pageIndex: Int) {
         CoroutineScope(Dispatchers.Main).launch {
-            delay(500)
-            binding.webView.evaluateJavascript("scrollToPage($pageIndex)", null)
+            // Remove fixed delay, use rendering readiness check
+            binding.webView.evaluateJavascript("(function() { return renderingInProgress; })()", { result ->
+                if (result == "false") {
+                    // Rendering completed, can scroll
+                    binding.webView.evaluateJavascript("scrollToPage($pageIndex)", null)
+                } else {
+                    // Rendering still in progress, wait and retry
+                    CoroutineScope(Dispatchers.Main).launch {
+                        delay(200)
+                        binding.webView.evaluateJavascript("scrollToPage($pageIndex)", null)
+                    }
+                }
+            })
         }
     }
 
@@ -464,39 +531,56 @@ class PdfViewerActivity : AppCompatActivity() {
         val newDocument = PDDocument()
 
         val pageNumberMap = mutableMapOf<Int, Int>()
+        val totalPages = document.numberOfPages
 
-        for ((newIndex, oldIndex) in document.pages.count().let { (0 until it).withIndex() }) {
-            val oldPage = document.getPage(oldIndex)
-            newDocument.addPage(oldPage)
-            pageNumberMap[oldIndex] = newIndex
+        // Ensure correct page order during copying
+        for (pageIndex in 0 until totalPages) {
+            val page = document.getPage(pageIndex)
+            newDocument.addPage(page)
+            pageNumberMap[pageIndex] = pageIndex
+            Log.d("RENAMING", "Copying page ${pageIndex + 1} of $totalPages")
         }
 
-        val renumberedFile = File(cacheDir, "renumbered.pdf")
-        newDocument.use { it.save(renumberedFile) }
+        val renumberedFile = File(cacheDir, "renumbered_${System.currentTimeMillis()}.pdf")
+        newDocument.use { 
+            it.save(renumberedFile)
+            Log.d("RENAMING", "Saved renumbered PDF with ${it.numberOfPages} pages")
+        }
         document.close()
 
-        Log.d("RENAMING", "Saved renumbered PDF as: ${renumberedFile.absolutePath}")
+        Log.d("RENAMING", "Renumbered PDF saved as: ${renumberedFile.absolutePath}")
         return renumberedFile
     }
 
     
 
-    // Завантаження PDF-файлу з URL (приклад)
-    private fun downloadPdfFile(urlStr: String): Uri {
-        val url = URL(urlStr)
-        val connection = url.openConnection() as HttpURLConnection
-        connection.connect()
-        if (connection.responseCode != HttpURLConnection.HTTP_OK) {
-            throw Exception("Server returned HTTP ${connection.responseCode} ${connection.responseMessage}")
-        }
-        val file = File(cacheDir, "temp.pdf")
-        connection.inputStream.use { input ->
-            FileOutputStream(file).use { output ->
-                input.copyTo(output)
+    // Safe PDF file download from URL
+    private fun downloadPdfFile(urlStr: String): Uri? {
+        return try {
+            val url = URL(urlStr)
+            val connection = url.openConnection() as HttpURLConnection
+            connection.connectTimeout = 30000 // 30 seconds
+            connection.readTimeout = 60000 // 60 seconds
+            connection.connect()
+            
+            if (connection.responseCode != HttpURLConnection.HTTP_OK) {
+                Log.e("PDF_DOWNLOAD", "Server returned HTTP ${connection.responseCode} ${connection.responseMessage}")
+                return null
             }
+            
+            val file = File(cacheDir, "downloaded_${System.currentTimeMillis()}.pdf")
+            connection.inputStream.use { input ->
+                FileOutputStream(file).use { output ->
+                    input.copyTo(output)
+                }
+            }
+            connection.disconnect()
+            Log.d("PDF_DOWNLOAD", "File downloaded successfully: ${file.absolutePath}")
+            Uri.fromFile(file)
+        } catch (e: Exception) {
+            Log.e("PDF_DOWNLOAD", "Error downloading PDF: ${e.message}", e)
+            null
         }
-        connection.disconnect()
-        return Uri.fromFile(file)
     }
 
 

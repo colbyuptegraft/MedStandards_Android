@@ -34,7 +34,7 @@ class MainActivity : AppCompatActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, true)
 
         WindowInsetsControllerCompat(window, window.decorView).apply {
-            // Явно показуємо статусбар і навбар
+            // Explicitly show status bar and navigation bar
             show(WindowInsetsCompat.Type.statusBars())
             show(WindowInsetsCompat.Type.navigationBars())
         }

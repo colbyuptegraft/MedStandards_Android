@@ -102,7 +102,7 @@ class SplashActivity : AppCompatActivity() {
 
                     billingClient.queryPurchasesAsync(params) { result, purchasesList ->
                         if (result.responseCode == BillingClient.BillingResponseCode.OK) {
-                            // Перевіряємо, чи є хоч одна активна підписка
+                            // Check if there is at least one active subscription
                             val activeSubscription = purchasesList.any { purchase ->
                                 purchase.purchaseState == Purchase.PurchaseState.PURCHASED &&
                                         purchase.isAcknowledged
@@ -133,15 +133,18 @@ class SplashActivity : AppCompatActivity() {
             if (!Utils.filesMap.containsKey(folderName)) {
                 Utils.filesMap[folderName] = mutableListOf()
             }
-            val currentFolderList = Utils.filesMap[folderName]!!
+            val currentFolderList = Utils.filesMap[folderName] ?: run {
+                Utils.filesMap[folderName] = mutableListOf()
+                Utils.filesMap[folderName]!!
+            }
 
             listResult.items.forEach { file ->
-                //Log.d("FIREBASE", "Файл у папці $folderName: ${file.name}")
+                //Log.d("FIREBASE", "File in folder $folderName: ${file.name}")
                 currentFolderList.add(file)
             }
 
             listResult.prefixes.forEach { subFolder ->
-                //Log.d("FIREBASE", "Папка: ${subFolder.name}")
+                //Log.d("FIREBASE", "Folder: ${subFolder.name}")
                 listFilesWithPagination(subFolder, null)
             }
 
@@ -151,7 +154,7 @@ class SplashActivity : AppCompatActivity() {
                 listFilesWithPagination(folderRef, listResult.pageToken)
             }
         }.addOnFailureListener { exception ->
-            //Log.e("FIREBASE", "Помилка отримання файлів: ${exception.message}")
+            //Log.e("FIREBASE", "Error getting files: ${exception.message}")
             checkAllFilesFetched()
         }
     }
@@ -164,21 +167,24 @@ class SplashActivity : AppCompatActivity() {
         }
 
         listQuery.addOnSuccessListener { listResult: ListResult ->
-            // Для af використовуємо folderRef.name як ключ
+            // For af we use folderRef.name as key
             val folderName = folderRef.name
 
             if (!Utils.afFilesMap.containsKey(folderName)) {
                 Utils.afFilesMap[folderName] = mutableListOf()
             }
-            val currentFolderList = Utils.afFilesMap[folderName]!!
+            val currentFolderList = Utils.afFilesMap[folderName] ?: run {
+                Utils.afFilesMap[folderName] = mutableListOf()
+                Utils.afFilesMap[folderName]!!
+            }
 
             listResult.prefixes.forEach { subFolder ->
-                Log.d("FIREBASE", "Підпапка (af): ${subFolder.name}")
+                Log.d("FIREBASE", "Subfolder (af): ${subFolder.name}")
                 currentFolderList.add(subFolder)
                 listAfFilesWithPagination(subFolder, null)
             }
             listResult.items.forEach { file ->
-                Log.d("FIREBASE", "Файл у папці $folderName (af): ${file.name}")
+                Log.d("FIREBASE", "File in folder $folderName (af): ${file.name}")
                 currentFolderList.add(file)
             }
 
@@ -188,7 +194,7 @@ class SplashActivity : AppCompatActivity() {
                 listAfFilesWithPagination(folderRef, listResult.pageToken)
             }
         }.addOnFailureListener { exception ->
-            //Log.e("FIREBASE", "Помилка отримання файлів (af): ${exception.message}")
+            //Log.e("FIREBASE", "Error getting files (af): ${exception.message}")
             checkAllFilesFetched()
         }
     }
@@ -209,7 +215,7 @@ class SplashActivity : AppCompatActivity() {
     }
 
     private fun navigateToMain() {
-        //Log.d("FIREBASE", "Всі файли отримані! Переходимо на MainActivity")
+        //Log.d("FIREBASE", "All files fetched! Navigating to MainActivity")
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
         finish()

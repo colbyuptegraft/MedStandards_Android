@@ -25,7 +25,7 @@ class AirForceViewModel : ViewModel() {
         val storageRefs = Utils.afFilesMap[path] ?: emptyList()
 
         if (storageRefs.isEmpty()) {
-            Log.e("Firebase", "Папка '$path' порожня!")
+            Log.e("Firebase", "Folder '$path' is empty!")
             _filesAndFolders.postValue(emptyList())
             return
         }

@@ -30,15 +30,18 @@ object Utils {
             if (!filesMap.containsKey(folderName)) {
                 filesMap[folderName] = mutableListOf()
             }
-            val currentFolderList = filesMap[folderName]!!
+            val currentFolderList = filesMap[folderName] ?: run {
+                filesMap[folderName] = mutableListOf()
+                filesMap[folderName]!!
+            }
 
             listResult.items.forEach { file ->
-                //Log.d("FIREBASE", "Файл у папці $folderName: ${file.name}")
+                //Log.d("FIREBASE", "File in folder $folderName: ${file.name}")
                 currentFolderList.add(file)
             }
 
             listResult.prefixes.forEach { subFolder ->
-                //Log.d("FIREBASE", "Папка: ${subFolder.name}")
+                //Log.d("FIREBASE", "Folder: ${subFolder.name}")
                 listFilesWithPagination(subFolder, null)
             }
 
@@ -57,21 +60,24 @@ object Utils {
         }
 
         listQuery.addOnSuccessListener { listResult: ListResult ->
-            // Для af використовуємо folderRef.name як ключ
+            // For af we use folderRef.name as key
             val folderName = folderRef.name
 
             if (!afFilesMap.containsKey(folderName)) {
                 afFilesMap[folderName] = mutableListOf()
             }
-            val currentFolderList = afFilesMap[folderName]!!
+            val currentFolderList = afFilesMap[folderName] ?: run {
+                afFilesMap[folderName] = mutableListOf()
+                afFilesMap[folderName]!!
+            }
 
             listResult.prefixes.forEach { subFolder ->
-                //Log.d("FIREBASE", "Підпапка (af): ${subFolder.name}")
+                //Log.d("FIREBASE", "Subfolder (af): ${subFolder.name}")
                 currentFolderList.add(subFolder)
                 listAfFilesWithPagination(subFolder, null)
             }
             listResult.items.forEach { file ->
-                //Log.d("FIREBASE", "Файл у папці $folderName (af): ${file.name}")
+                //Log.d("FIREBASE", "File in folder $folderName (af): ${file.name}")
                 currentFolderList.add(file)
             }
 
@@ -79,7 +85,7 @@ object Utils {
                 listAfFilesWithPagination(folderRef, listResult.pageToken)
             }
         }.addOnFailureListener { exception ->
-            //Log.e("FIREBASE", "Помилка отримання файлів (af): ${exception.message}")
+            //Log.e("FIREBASE", "Error getting files (af): ${exception.message}")
         }
     }
 
