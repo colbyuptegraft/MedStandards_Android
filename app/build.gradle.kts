@@ -6,14 +6,14 @@ plugins {
 
 android {
     namespace = "com.colbycoapps.med_standards"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.colbycoapps.med_standards"
         minSdk = 26
-        targetSdk = 35
-        versionCode = 146025
-        versionName = "2.0.4"
+        targetSdk = 36
+        versionCode = 146026
+        versionName = "2.0.5"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true
