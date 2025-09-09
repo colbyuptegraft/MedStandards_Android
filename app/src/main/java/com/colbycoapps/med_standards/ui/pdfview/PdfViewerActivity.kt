@@ -79,11 +79,12 @@ class PdfViewerActivity : AppCompatActivity() {
         binding = ActivityPdfViewerBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        if(!Utils.premium)
-        {
-            Utils.countFree -= 1
-            Utils.sharedPreferences.edit().putInt("countFree", Utils.countFree).apply()
-        }
+        // SUBSCRIPTION DISABLED - No counter decrement needed
+        // if(!Utils.premium)
+        // {
+        //     Utils.countFree -= 1
+        //     Utils.sharedPreferences.edit().putInt("countFree", Utils.countFree).apply()
+        // }
 
         PDFBoxResourceLoader.init(applicationContext)
         setSupportActionBar(binding.toolbar2)

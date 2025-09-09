@@ -106,7 +106,8 @@ class AirForceFragment : Fragment(), AirForceFileAdapter.OnFileClickListener {
             }
 
         } else {
-            if (Utils.countFree > 0) {
+            // SUBSCRIPTION DISABLED - Always allow PDF viewing
+            // if (Utils.countFree > 0) {
                 val intent = if (!Utils.storage) Intent(
                     requireContext(),
                     PdfViewerActivity::class.java
@@ -122,25 +123,25 @@ class AirForceFragment : Fragment(), AirForceFileAdapter.OnFileClickListener {
                     }
 
                 startActivity(intent)
-            } else
-            {
-                val builder = AlertDialog.Builder(context)
-                builder.setTitle("Subscription Required")
-                builder.setMessage("You've exhausted the number of free documents views! You must subscribe to view any additional documents.")
-                builder.setPositiveButton("Subscribe Now") { dialog, _ ->
-                    val navController = requireActivity().findNavController(R.id.nav_host_fragment_activity_main)
-                    val navView = requireActivity().findViewById<BottomNavigationView>(R.id.nav_view)
-                    navView.selectedItemId = navView.menu.getItem(4).itemId
-                    navView.visibility = View.GONE
-                    navController.navigate(R.id.navigation_subscriptin)
-                    dialog.dismiss()
-                }
-                builder.setNegativeButton("Close"){ dialog, _ ->
-                    dialog.dismiss()
-                }
-                val alertDialog = builder.create()
-                alertDialog.show()
-            }
+            // } else
+            // {
+            //     val builder = AlertDialog.Builder(context)
+            //     builder.setTitle("Subscription Required")
+            //     builder.setMessage("You've exhausted the number of free documents views! You must subscribe to view any additional documents.")
+            //     builder.setPositiveButton("Subscribe Now") { dialog, _ ->
+            //         val navController = requireActivity().findNavController(R.id.nav_host_fragment_activity_main)
+            //         val navView = requireActivity().findViewById<BottomNavigationView>(R.id.nav_view)
+            //         navView.selectedItemId = navView.menu.getItem(4).itemId
+            //         navView.visibility = View.GONE
+            //         navController.navigate(R.id.navigation_subscriptin)
+            //         dialog.dismiss()
+            //     }
+            //     builder.setNegativeButton("Close"){ dialog, _ ->
+            //         dialog.dismiss()
+            //     }
+            //     val alertDialog = builder.create()
+            //     alertDialog.show()
+            // }
         }
     }
 }
