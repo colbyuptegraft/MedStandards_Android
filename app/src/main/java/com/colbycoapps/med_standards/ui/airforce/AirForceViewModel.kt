@@ -1,4 +1,4 @@
-package com.colbycoapps.med_standards.ui.airforse
+package com.colbycoapps.med_standards.ui.airforce
 
 import android.content.Context
 import android.net.Uri

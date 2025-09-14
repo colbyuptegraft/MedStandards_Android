@@ -1,6 +1,5 @@
-package com.colbycoapps.med_standards.ui.airforse
+package com.colbycoapps.med_standards.ui.airforce
 
-import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,14 +9,12 @@ import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.colbycoapps.med_standards.R
 import com.colbycoapps.med_standards.databinding.FragmentAirforseBinding
 import com.colbycoapps.med_standards.ui.Utils
 import com.colbycoapps.med_standards.ui.adapter.AirForceFileAdapter
 import com.colbycoapps.med_standards.ui.pdfview.PdfViewerActivity
-import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class AirForceFragment : Fragment(), AirForceFileAdapter.OnFileClickListener {
 

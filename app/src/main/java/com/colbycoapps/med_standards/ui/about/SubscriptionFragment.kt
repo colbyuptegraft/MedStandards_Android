@@ -45,8 +45,8 @@ class SubscriptionFragment : Fragment() {
         // }
         
         // Disable subscription button
-        binding.buttonSelect.isEnabled = false
-        binding.buttonSelect.text = "Free App"
+        // binding.buttonSelect.isEnabled = false
+        // binding.buttonSelect.text = "Free App"
 
         return root
     }

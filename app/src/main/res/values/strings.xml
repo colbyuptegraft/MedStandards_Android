@@ -8,16 +8,17 @@
     <string name="about">This app presents the medical standards for special duty personnel of the United States Air Force, Army, and Navy
         as well as some other useful tools and information for Aerospace Medicine Professionals. All documents have been cleared for public release.
         \n\n
-        After 10 years of being free, this app will now require a $0.99 subscription fee. These fees will help sustain the application and support
-        its ongoing development and maintenance. Enhancements have also been applied for faster and less laborious updates. For the Android version,
-        users also now can search within PDFs. However, as with any code upgrade, there will be bugs! If you experience any, please email
-        <a href="mailto:info@doc-apps.com?subject=Med Standards - Android">info@doc-apps.com</a>.
-        Thank you all for your ongoing support and continuous suggestions for content updates and improvements.
+        <i>Med Standards</i> is <b>FREE</b> once again!!!
         \n\n
         Upon initially downloading the app, please select the <i>Download PDFs</i> button from the <b>Settings</b> tab to download all the available content.
-        This make take a few minutes. This button changes to <i>Sync Content</i> after initial download.
+        This may take a few minutes. This button changes to <i>Sync Content</i> after initial download.
         \n\n
         If you do not see updated content after receiving a notification that new documents are available, please select the <i>Sync Content</i> button
         from the <b>Settings</b> tab.
+        \n\n
+        If you experience any bugs, please email <a href="mailto:info@doc-apps.com?subject=Med Standards - Android">info@doc-apps.com</a>.
+        Most bugs can likely be solved by uninstalling and re-installing the app.
+        \n\n
+        Thank you all for your ongoing support and continuous suggestions for content updates and improvements.
 </string>
 </resources>
