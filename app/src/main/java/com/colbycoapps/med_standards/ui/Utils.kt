@@ -13,8 +13,9 @@ object Utils {
     val filesMap: MutableMap<String, MutableList<StorageReference>> = mutableMapOf()
     var afFilesMap: MutableMap<String, MutableList<StorageReference>> = mutableMapOf()
     var storage = false
-    var premium = false
-    var countFree = 0
+    // SUBSCRIPTION DISABLED - Always allow premium access
+    var premium = true  // Always true for free app
+    var countFree = 10  // Always allow unlimited views
     lateinit var sharedPreferences: SharedPreferences
 
     private fun listFilesWithPagination(folderRef: StorageReference, pageToken: String?) {

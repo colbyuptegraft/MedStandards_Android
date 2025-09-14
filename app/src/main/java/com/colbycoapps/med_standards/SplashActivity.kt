@@ -46,16 +46,20 @@ class SplashActivity : AppCompatActivity() {
             Log.d("Storage", "true")
         }
 
-        setupBillingClientAndCheckSubscription { hasSubscription ->
-            runOnUiThread {
-                if (hasSubscription) {
-                    Utils.countFree = 10
-                    Utils.premium = true
-                } else {
-
-                }
-            }
-        }
+        // SUBSCRIPTION DISABLED - Always set premium to true
+        // setupBillingClientAndCheckSubscription { hasSubscription ->
+        //     runOnUiThread {
+        //         if (hasSubscription) {
+        //             Utils.countFree = 10
+        //             Utils.premium = true
+        //         } else {
+        //         }
+        //     }
+        // }
+        
+        // Always allow premium access
+        Utils.premium = true
+        Utils.countFree = 10
 
         if (isInternetAvailable(this)) {
             if(Utils.filesMap.isEmpty() && Utils.afFilesMap.isEmpty()) {

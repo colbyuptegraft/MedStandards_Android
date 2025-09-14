@@ -38,10 +38,15 @@ class SubscriptionFragment : Fragment() {
         binding = FragmentSubscriptionBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        setupBillingClient(requireContext())
-        binding.buttonSelect.setOnClickListener {
-            launchSubscriptionPurchaseFlow(requireActivity(), "premium_subscription")
-        }
+        // SUBSCRIPTION DISABLED - Billing client setup disabled
+        // setupBillingClient(requireContext())
+        // binding.buttonSelect.setOnClickListener {
+        //     launchSubscriptionPurchaseFlow(requireActivity(), "premium_subscription")
+        // }
+        
+        // Disable subscription button
+        binding.buttonSelect.isEnabled = false
+        binding.buttonSelect.text = "Free App"
 
         return root
     }
