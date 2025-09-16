@@ -1,13 +1,15 @@
 package com.colbycoapps.med_standards.ui.adapter
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.colbycoapps.med_standards.R
 
-class FileAdapter(private val files: List<Pair<String, String>>, private val listener: OnFileClickListener, private val storage: Boolean) : RecyclerView.Adapter<FileAdapter.FileViewHolder>() {
+class FileAdapter(private var files: List<Pair<String, String>>, private val listener: OnFileClickListener, private val storage: Boolean) : RecyclerView.Adapter<FileAdapter.FileViewHolder>() {
 
     interface OnFileClickListener {
         fun onFileClick(fileName: String,fileUrl: String)
@@ -30,6 +32,14 @@ class FileAdapter(private val files: List<Pair<String, String>>, private val lis
     }
 
     override fun getItemCount(): Int = files.size
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun updateItems(newFiles: List<Pair<String, String>>) {
+        val diffCallback = FileDiffCallback(files, newFiles)
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
+        files = newFiles
+        diffResult.dispatchUpdatesTo(this)
+    }
 
     class FileViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val fileName: TextView = view.findViewById(R.id.fileName)

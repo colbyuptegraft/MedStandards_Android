@@ -1,8 +1,11 @@
 package com.colbycoapps.med_standards.ui.about
 
+// COMMENTED OUT: SubscriptionFragment completely disabled
+/*
 import android.app.Activity
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,7 +20,17 @@ import com.android.billingclient.api.PurchasesUpdatedListener
 import com.android.billingclient.api.SkuDetailsParams
 import com.colbycoapps.med_standards.databinding.FragmentSubscriptionBinding
 import com.colbycoapps.med_standards.ui.Utils
+*/
 
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.TextView
+import androidx.fragment.app.Fragment
+
+// COMMENTED OUT: Entire SubscriptionFragment class disabled
+/*
 class SubscriptionFragment : Fragment() {
 
     private lateinit var binding: FragmentSubscriptionBinding
@@ -38,15 +51,10 @@ class SubscriptionFragment : Fragment() {
         binding = FragmentSubscriptionBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        // SUBSCRIPTION DISABLED - Billing client setup disabled
-        // setupBillingClient(requireContext())
-        // binding.buttonSelect.setOnClickListener {
-        //     launchSubscriptionPurchaseFlow(requireActivity(), "premium_subscription")
-        // }
-        
-        // Disable subscription button
-        // binding.buttonSelect.isEnabled = false
-        // binding.buttonSelect.text = "Free App"
+        setupBillingClient(requireContext())
+        binding.buttonSelect.setOnClickListener {
+            launchSubscriptionPurchaseFlow(requireActivity(), "premium_subscription")
+        }
 
         return root
     }
@@ -93,8 +101,14 @@ class SubscriptionFragment : Fragment() {
                     .build()
                 billingClient.acknowledgePurchase(acknowledgePurchaseParams) { billingResult ->
                     if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                        Utils.countFree = 10
-                        Utils.premium = true
+                                        Utils.countFree = 3
+                Utils.premium = true
+                // Save updated subscription status
+                Utils.sharedPreferences.edit()
+                    .putBoolean("premium_status", true)
+                                                .putInt("countFree", 3)
+                    .apply()
+                Log.d("SUBSCRIPTION", "Subscription acknowledged and saved")
                     }
                 }
             }
@@ -102,4 +116,16 @@ class SubscriptionFragment : Fragment() {
     }
 
 
+}
+*/
+
+// Simple stub instead of SubscriptionFragment
+class SubscriptionFragment : Fragment() {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val textView = TextView(requireContext())
+        textView.text = "Subscription disabled. All PDF documents are available for free."
+        textView.textSize = 18f
+        textView.setPadding(32, 32, 32, 32)
+        return textView
+    }
 }

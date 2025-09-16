@@ -11,7 +11,6 @@ import java.io.File
 
 class AirForceViewModel : ViewModel() {
 
-
     private val _filesAndFolders = MutableLiveData<List<Pair<String, String>>>()
     val filesAndFolders: LiveData<List<Pair<String, String>>> = _filesAndFolders
 
@@ -24,9 +23,7 @@ class AirForceViewModel : ViewModel() {
         currentPath = path
         val storageRefs = Utils.afFilesMap[path] ?: emptyList()
 
-        if (storageRefs.isEmpty()) {
-            Log.e("Firebase", "Folder '$path' is empty!")
-            _filesAndFolders.postValue(emptyList())
+        if (storageRefs.isEmpty()) {            _filesAndFolders.postValue(emptyList())
             return
         }
 
@@ -98,9 +95,7 @@ class AirForceViewModel : ViewModel() {
             emptyList()
         }
 
-        folders.forEach { folder ->
-            Log.e("folder", folder.name)
-            result.add(Pair(folder.name, "folder"))
+        folders.forEach { folder ->            result.add(Pair(folder.name, "folder"))
         }
 
         _filesAndFoldersStorage.value = result
@@ -121,7 +116,6 @@ class AirForceViewModel : ViewModel() {
                 result.add(fileName to fileUri.toString())
             }
         }
-
 
         _filesAndFoldersStorage.value = result
 

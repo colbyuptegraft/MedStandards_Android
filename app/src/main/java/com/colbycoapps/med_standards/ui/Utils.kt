@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
+import android.util.Log
 import com.colbycoapps.med_standards.ui.about.DownloadWorker.Companion.PREFS_NAME
 import com.google.firebase.storage.ListResult
 import com.google.firebase.storage.StorageReference
@@ -13,9 +14,11 @@ object Utils {
     val filesMap: MutableMap<String, MutableList<StorageReference>> = mutableMapOf()
     var afFilesMap: MutableMap<String, MutableList<StorageReference>> = mutableMapOf()
     var storage = false
-    // SUBSCRIPTION DISABLED - Always allow premium access
-    var premium = true  // Always true for free app
-    var countFree = 10  // Always allow unlimited views
+    // COMMENTED OUT: Subscription logic disabled
+    // var premium = false
+    // var countFree = 0
+    var premium = true // Always premium status
+    var countFree = 999 // Unlimited views
     lateinit var sharedPreferences: SharedPreferences
 
     private fun listFilesWithPagination(folderRef: StorageReference, pageToken: String?) {
@@ -88,6 +91,24 @@ object Utils {
         }.addOnFailureListener { exception ->
             //Log.e("FIREBASE", "Error getting files (af): ${exception.message}")
         }
+    }
+
+    // COMMENTED OUT: Subscription status refresh function disabled
+    // Force refresh subscription status from cache
+    fun refreshSubscriptionStatus() {
+        /*
+        try {
+            premium = sharedPreferences.getBoolean("premium_status", false)
+            countFree = sharedPreferences.getInt("countFree", 3)
+            Log.d("UTILS", "Refreshed subscription status: premium=$premium, countFree=$countFree")
+        } catch (e: UninitializedPropertyAccessException) {
+            Log.w("UTILS", "SharedPreferences not initialized yet")
+        }
+        */
+        // Force set premium status
+        premium = true
+        countFree = 999
+        Log.d("UTILS", "Subscription logic disabled - always premium")
     }
 
     fun isInternetAvailable(context: Context): Boolean {

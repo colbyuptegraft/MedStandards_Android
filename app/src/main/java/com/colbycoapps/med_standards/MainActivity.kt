@@ -1,7 +1,10 @@
 package com.colbycoapps.med_standards
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
+import android.util.Log
+import com.colbycoapps.med_standards.ui.about.DownloadWorker.Companion.PREFS_NAME
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
@@ -19,6 +22,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.colbycoapps.med_standards.databinding.ActivityMainBinding
+import com.colbycoapps.med_standards.ui.Utils
 
 class MainActivity : AppCompatActivity() {
 
@@ -27,7 +31,33 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
+        Log.d("MAIN_ACTIVITY", "=== MAIN ACTIVITY STARTED ===")
+        
+        // Ensure SharedPreferences is initialized
+        try {
+            // Try to access sharedPreferences to see if it's initialized
+            Utils.sharedPreferences.getString("test", null)
+            Log.d("MAIN_ACTIVITY", "SharedPreferences already initialized - premium: ${Utils.premium}, countFree: ${Utils.countFree}")
+        } catch (e: UninitializedPropertyAccessException) {
+            // Not initialized, initialize it now
+            Utils.sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            // COMMENTED OUT: Subscription status loading disabled
+            // Utils.countFree = Utils.sharedPreferences.getInt("countFree", 3)
+            // Utils.premium = Utils.sharedPreferences.getBoolean("premium_status", false)
+            Utils.countFree = 999 // Unlimited views
+            Utils.premium = true // Always premium
+            Log.d("MAIN_ACTIVITY", "Initialized SharedPreferences: premium=${Utils.premium}, countFree=${Utils.countFree}")
+        }
+        
+        // COMMENTED OUT: Subscription status refresh disabled
+        // Refresh subscription status when MainActivity starts
+        // Utils.refreshSubscriptionStatus()
+        
+        // Force set premium status
+        Utils.premium = true
+        Utils.countFree = 999
+        
+        Log.d("MAIN_ACTIVITY", "After refresh - premium: ${Utils.premium}, countFree: ${Utils.countFree}")
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)

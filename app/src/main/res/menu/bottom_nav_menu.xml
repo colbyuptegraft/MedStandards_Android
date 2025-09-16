@@ -4,7 +4,7 @@
     <item
         android:id="@+id/navigation_airfose"
         android:icon="@drawable/fighterjet"
-        android:title="@string/title_airforse" />
+        android:title="@string/title_airforce" />
 
     <item
         android:id="@+id/navigation_army"

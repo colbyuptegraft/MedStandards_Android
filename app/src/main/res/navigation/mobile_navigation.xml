@@ -8,8 +8,8 @@
     <fragment
         android:id="@+id/navigation_airfose"
         android:name="com.colbycoapps.med_standards.ui.airforce.AirForceFragment"
-        android:label="@string/title_airforse"
-        tools:layout="@layout/fragment_airforse" />
+        android:label="@string/title_airforce"
+        tools:layout="@layout/fragment_airforce" />
 
     <fragment
         android:id="@+id/navigation_army"
@@ -37,16 +37,22 @@
         <action
             android:id="@+id/action_navigation_about_to_navigation_about_app"
             app:destination="@id/navigation_about_app" />
+        <!-- COMMENTED OUT: Navigation to subscription removed -->
+        <!--
         <action
             android:id="@+id/action_navigation_about_to_navigation_subscriptin"
             app:destination="@id/navigation_subscriptin" />
+        -->
     </fragment>
 
+    <!-- COMMENTED OUT: Subscription fragment removed from navigation -->
+    <!--
     <fragment
         android:id="@+id/navigation_subscriptin"
         android:name="com.colbycoapps.med_standards.ui.about.SubscriptionFragment"
         android:label="Subscription plan"
         tools:layout="@layout/fragment_subscription" />
+    -->
     <fragment
         android:id="@+id/navigation_about_app"
         android:name="com.colbycoapps.med_standards.ui.about.AboutAppFragment"

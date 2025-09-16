@@ -32,6 +32,8 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="TouchTargetSizeCheck" />
 
+    <!-- COMMENTED OUT: Subscribe button removed from UI -->
+    <!--
     <com.github.nikartm.button.FitButton
         android:id="@+id/buttonSubs"
         android:layout_width="match_parent"
@@ -58,6 +60,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button"
         tools:ignore="TouchTargetSizeCheck" />
+    -->
 
     <com.github.nikartm.button.FitButton
         android:id="@+id/buttonRate"
@@ -82,7 +85,7 @@
         app:fb_textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/buttonSubs"
+        app:layout_constraintTop_toBottomOf="@+id/button"
         tools:ignore="TouchTargetSizeCheck" />
 
     <com.github.nikartm.button.FitButton

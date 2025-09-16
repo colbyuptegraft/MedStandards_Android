@@ -7,11 +7,14 @@ import android.net.ConnectivityManager
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+// COMMENTED OUT: Billing imports disabled
+/*
 import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.BillingClientStateListener
 import com.android.billingclient.api.BillingResult
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.QueryPurchasesParams
+*/
 import com.colbycoapps.med_standards.databinding.ActivitySplashBinding
 import com.colbycoapps.med_standards.ui.Utils
 import com.colbycoapps.med_standards.ui.Utils.sharedPreferences
@@ -30,7 +33,10 @@ class SplashActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySplashBinding
     private var allFilesFetched = false
-    private lateinit var billingClient: BillingClient
+    private var filesCheckCompleted = false
+    private var subscriptionCheckCompleted = false
+    // COMMENTED OUT: Billing client variable disabled
+    // private lateinit var billingClient: BillingClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,89 +45,178 @@ class SplashActivity : AppCompatActivity() {
 
         Utils.sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         val downloaded = sharedPreferences.getBoolean(FILES_DOWNLOADED_KEY, false)
-        Utils.countFree = sharedPreferences.getInt("countFree", 10)
+        // COMMENTED OUT: Subscription status loading disabled
+        // Utils.countFree = sharedPreferences.getInt("countFree", 3)
+        // Load cached subscription status
+        // Utils.premium = sharedPreferences.getBoolean("premium_status", false)
+        
+        // Force set premium status
+        Utils.countFree = 999 // Unlimited views
+        Utils.premium = true // Always premium
+        
+        Log.d("SPLASH_INIT", "=== SPLASH ACTIVITY STARTED ===")
+        Log.d("SPLASH_INIT", "Initial countFree: ${Utils.countFree}")
+        Log.d("SPLASH_INIT", "Initial premium: ${Utils.premium}")
+        Log.d("SPLASH_INIT", "Files downloaded: $downloaded")
 
         if (downloaded) {
             Utils.storage = true
             Log.d("Storage", "true")
         }
 
-        // SUBSCRIPTION DISABLED - Always set premium to true
-        // setupBillingClientAndCheckSubscription { hasSubscription ->
-        //     runOnUiThread {
-        //         if (hasSubscription) {
-        //             Utils.countFree = 10
-        //             Utils.premium = true
-        //         } else {
-        //         }
-        //     }
-        // }
+        // COMMENTED OUT: Subscription check disabled
+        // Check subscription with timeout and proper error handling
+        // checkSubscriptionWithTimeout()
         
-        // Always allow premium access
-        Utils.premium = true
-        Utils.countFree = 10
+        // Skip subscription check - mark as completed immediately
+        subscriptionCheckCompleted = true
 
         if (isInternetAvailable(this)) {
             if(Utils.filesMap.isEmpty() && Utils.afFilesMap.isEmpty()) {
                 val storageRef = FirebaseStorage.getInstance().reference.child("PDFs")
                 listFilesWithPagination(storageRef, null)
                 listAfFilesWithPagination(storageRef.child("af"), null)
-                Log.d("FirebaseStorage", "true")
+                Log.d("FirebaseStorage", "Starting file download")
+                // Files check will be handled in checkAllFilesFetched()
             }
             else
             {
-                CoroutineScope(Dispatchers.Main).launch {
-                    delay(2000)
-                    navigateToMain()
-                }
+                // Files already loaded, mark as completed
+                filesCheckCompleted = true
+                Log.d("FirebaseStorage", "Files already loaded from cache")
+                checkIfReadyToNavigate(subscriptionCheckCompleted, filesCheckCompleted)
             }
         }
         else
         {
-            CoroutineScope(Dispatchers.Main).launch {
-                delay(2000)
-                navigateToMain()
-            }
+            // No internet, proceed with cached data
+            filesCheckCompleted = true
+            Log.d("FirebaseStorage", "No internet, using cached data")
+            checkIfReadyToNavigate(subscriptionCheckCompleted, filesCheckCompleted)
         }
 
     }
 
 
-    private fun setupBillingClientAndCheckSubscription(onResult: (Boolean) -> Unit) {
-        billingClient = BillingClient.newBuilder(this)
-            .setListener { _, _ -> }
-            .enablePendingPurchases()
-            .build()
-
-        billingClient.startConnection(object : BillingClientStateListener {
-            override fun onBillingServiceDisconnected() {
-                onResult(false)
+    // COMMENTED OUT: Subscription check function disabled
+    /*
+    private fun checkSubscriptionWithTimeout() {
+        subscriptionCheckCompleted = false
+        if (!isInternetAvailable(this)) {
+            filesCheckCompleted = true
+            subscriptionCheckCompleted = true  // No internet = can't check, use cached
+            Log.d("SUBSCRIPTION", "No internet - using cached subscription status")
+            // If no internet, check if we can navigate immediately
+            checkIfReadyToNavigate(subscriptionCheckCompleted, filesCheckCompleted)
+        }
+        
+        // Timeout protection - proceed after 5 seconds regardless
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(5000)
+            if (!subscriptionCheckCompleted) {
+                Log.w("SUBSCRIPTION", "Subscription check timeout, using cached status")
+                subscriptionCheckCompleted = true
+                checkIfReadyToNavigate(subscriptionCheckCompleted, filesCheckCompleted)
             }
-
-            override fun onBillingSetupFinished(billingResult: BillingResult) {
-                if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                    val params = QueryPurchasesParams.newBuilder()
-                        .setProductType(BillingClient.ProductType.SUBS)
-                        .build()
-
-                    billingClient.queryPurchasesAsync(params) { result, purchasesList ->
-                        if (result.responseCode == BillingClient.BillingResponseCode.OK) {
-                            // Check if there is at least one active subscription
-                            val activeSubscription = purchasesList.any { purchase ->
-                                purchase.purchaseState == Purchase.PurchaseState.PURCHASED &&
-                                        purchase.isAcknowledged
-                            }
-                            onResult(activeSubscription)
-                        } else {
-                            onResult(false)
-                        }
+        }
+        
+        // Start subscription check only if we have internet
+        if (isInternetAvailable(this)) {
+            setupBillingClientAndCheckSubscription { hasSubscription ->
+                runOnUiThread {
+                    if (hasSubscription) {
+                        Utils.countFree = 3
+                        Utils.premium = true
+                        // Cache the subscription status
+                        sharedPreferences.edit()
+                            .putBoolean("premium_status", true)
+                            .putInt("countFree", 3)
+                            .apply()
+                        Log.d("SUBSCRIPTION", "Active subscription found")
+                    } else {
+                        Utils.premium = false
+                        // Update cached status
+                        sharedPreferences.edit()
+                            .putBoolean("premium_status", false)
+                            .apply()
+                        Log.d("SUBSCRIPTION", "No active subscription")
                     }
-                } else {
-                    onResult(false)
+                    subscriptionCheckCompleted = true
+                    checkIfReadyToNavigate(subscriptionCheckCompleted, filesCheckCompleted)
                 }
             }
-        })
+        } else {
+            Log.d("SUBSCRIPTION", "No internet - subscription check already marked complete")
+        }
     }
+    */
+
+    private fun checkIfReadyToNavigate(subscriptionDone: Boolean, filesDone: Boolean) {
+        Log.d("NAVIGATION", "Checking navigation readiness: subscription=$subscriptionDone, files=$filesDone")
+        if (subscriptionDone && filesDone) {
+            Log.d("NAVIGATION", "Both checks completed, navigating to MainActivity")
+            CoroutineScope(Dispatchers.Main).launch {
+                delay(500) // Small delay for UI stability
+                proceedToMainActivity()
+            }
+        } else {
+            Log.d("NAVIGATION", "Still waiting for checks to complete")
+        }
+    }
+
+    private fun proceedToMainActivity() {
+        if (!isFinishing && !isDestroyed) {
+            navigateToMain()
+        }
+    }
+
+    // COMMENTED OUT: Billing check function disabled
+    /*
+    private fun setupBillingClientAndCheckSubscription(onResult: (Boolean) -> Unit) {
+        try {
+            billingClient = BillingClient.newBuilder(this)
+                .setListener { _, _ -> }
+                .enablePendingPurchases()
+                .build()
+
+            billingClient.startConnection(object : BillingClientStateListener {
+                override fun onBillingServiceDisconnected() {
+                    Log.w("BILLING", "Billing service disconnected")
+                    onResult(false)
+                }
+
+                override fun onBillingSetupFinished(billingResult: BillingResult) {
+                    if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+                        val params = QueryPurchasesParams.newBuilder()
+                            .setProductType(BillingClient.ProductType.SUBS)
+                            .build()
+
+                        billingClient.queryPurchasesAsync(params) { result, purchasesList ->
+                            if (result.responseCode == BillingClient.BillingResponseCode.OK) {
+                                // Check if there is at least one active subscription
+                                val activeSubscription = purchasesList.any { purchase ->
+                                    purchase.purchaseState == Purchase.PurchaseState.PURCHASED &&
+                                            purchase.isAcknowledged
+                                }
+                                Log.d("BILLING", "Subscription check completed. Active: $activeSubscription")
+                                onResult(activeSubscription)
+                            } else {
+                                Log.w("BILLING", "Query purchases failed: ${result.responseCode}")
+                                onResult(false)
+                            }
+                        }
+                    } else {
+                        Log.w("BILLING", "Billing setup failed: ${billingResult.responseCode}")
+                        onResult(false)
+                    }
+                }
+            })
+        } catch (e: Exception) {
+            Log.e("BILLING", "Error setting up billing client", e)
+            onResult(false)
+        }
+    }
+    */
 
 
     private fun listFilesWithPagination(folderRef: StorageReference, pageToken: String?) {
@@ -214,7 +309,9 @@ class SplashActivity : AppCompatActivity() {
     private fun checkAllFilesFetched() {
         if (!allFilesFetched && Utils.filesMap.isNotEmpty() && Utils.afFilesMap.isNotEmpty()) {
             allFilesFetched = true
-            navigateToMain()
+            filesCheckCompleted = true
+            Log.d("FirebaseStorage", "All files fetched successfully")
+            checkIfReadyToNavigate(subscriptionCheckCompleted, filesCheckCompleted)
         }
     }
 

@@ -79,12 +79,30 @@ class PdfViewerActivity : AppCompatActivity() {
         binding = ActivityPdfViewerBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // SUBSCRIPTION DISABLED - No counter decrement needed
-        // if(!Utils.premium)
-        // {
-        //     Utils.countFree -= 1
-        //     Utils.sharedPreferences.edit().putInt("countFree", Utils.countFree).apply()
-        // }
+        Log.d("PDF_VIEWER", "=== PDF VIEWER STARTED ===")
+        Log.d("PDF_VIEWER", "On entry - premium: ${Utils.premium}, countFree: ${Utils.countFree}")
+
+        // COMMENTED OUT: View counting logic disabled
+        /*
+        // Double-check subscription status and decrease counter safely
+        if(!Utils.premium && Utils.countFree > 0)
+        {
+            Utils.countFree -= 1
+            Utils.sharedPreferences.edit().putInt("countFree", Utils.countFree).apply()
+            Log.d("PDF_VIEWER", "Decreased countFree to: ${Utils.countFree}")
+        } else if (!Utils.premium && Utils.countFree <= 0) {
+            // This should not happen if fragments check properly, but safety measure
+            Log.w("PDF_VIEWER", "Attempted to open PDF with no free views remaining")
+            Toast.makeText(this, "No free views remaining. Please subscribe.", Toast.LENGTH_LONG).show()
+            finish()
+            return
+        } else {
+            Log.d("PDF_VIEWER", "Premium user - no counter decrease")
+        }
+        */
+        
+        // Subscription logic disabled - always allow PDF access
+        Log.d("PDF_VIEWER", "Subscription logic disabled - PDF access granted")
 
         PDFBoxResourceLoader.init(applicationContext)
         setSupportActionBar(binding.toolbar2)
@@ -167,11 +185,11 @@ class PdfViewerActivity : AppCompatActivity() {
             if(!Utils.storage) {
                 pdfFile = if (pdfUrl.startsWith("http", ignoreCase = true)) {
                     downloadPdfFile(pdfUrl)?.let { uri ->
-                        File(uri.path ?: throw Exception("Не удалось получить путь к файлу"))
-                    } ?: throw Exception("Ошибка скачивания файла")
+                        File(uri.path ?: throw Exception("Failed to get file path"))
+                    } ?: throw Exception("File download error")
                 } else {
                     val path = Uri.parse(pdfUrl).path
-                    if (path != null) File(path) else throw Exception("Неверный путь к файлу")
+                    if (path != null) File(path) else throw Exception("Invalid file path")
                 }
                 withContext(Dispatchers.Main) {
                     loadPdfFromUri(pdfFile!!.toUri())

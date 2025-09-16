@@ -15,28 +15,63 @@ class NavyViewModel : ViewModel() {
 
     private val _filesStorage = MutableLiveData<List<Pair<String, String>>>()
     val filesStorage: LiveData<List<Pair<String, String>>> = _filesStorage
+    
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> = _isLoading
+    
+    // Cache for download URLs to avoid repeated Firebase calls
+    private val urlCache = mutableMapOf<String, String>()
 
     fun loadFiles() {
-        val armyFiles = Utils.filesMap["navy"] ?: emptyList()
+        val navyFiles = Utils.filesMap["navy"] ?: emptyList()
 
-        if (armyFiles.isNotEmpty()) {
+        if (navyFiles.isNotEmpty()) {
+            _isLoading.value = true
             val fileList = mutableListOf<Pair<String, String>>()
+            var completedCount = 0
 
-            armyFiles.forEach { storageRef ->
-                storageRef.downloadUrl.addOnSuccessListener { uri ->
+            navyFiles.forEach { storageRef ->
+                val storagePath = storageRef.path
+                
+                // Check cache first
+                if (urlCache.containsKey(storagePath)) {
                     val fileName = Uri.decode(storageRef.name).replace(".pdf", "")
-                    fileList.add(Pair(fileName, uri.toString()))
-
-                    if (fileList.size == armyFiles.size) {
+                    fileList.add(Pair(fileName, urlCache[storagePath]!!))
+                    
+                    completedCount++
+                    if (completedCount == navyFiles.size) {
                         fileList.sortBy { it.first.lowercase() }
                         _files.postValue(fileList)
+                        _isLoading.value = false
                     }
-                }.addOnFailureListener {
-                    Log.e("Firebase", "Error reived URL", it)
+                } else {
+                    // Load from Firebase and cache
+                    storageRef.downloadUrl.addOnSuccessListener { uri ->
+                        val fileName = Uri.decode(storageRef.name).replace(".pdf", "")
+                        val urlString = uri.toString()
+                        
+                        // Cache the URL
+                        urlCache[storagePath] = urlString
+                        fileList.add(Pair(fileName, urlString))
+
+                        completedCount++
+                        if (completedCount == navyFiles.size) {
+                            fileList.sortBy { it.first.lowercase() }
+                            _files.postValue(fileList)
+                            _isLoading.value = false
+                        }
+                    }.addOnFailureListener {
+                        Log.e("Firebase", "Error getting URL for navy files", it)
+                        completedCount++
+                        if (completedCount == navyFiles.size) {
+                            _isLoading.value = false
+                        }
+                    }
                 }
             }
         } else {
-            Log.e("Firebase", "There are no files in folder 'army'!")
+            Log.e("Firebase", "Navy files folder is empty!")
+            _isLoading.value = false
         }
     }
 

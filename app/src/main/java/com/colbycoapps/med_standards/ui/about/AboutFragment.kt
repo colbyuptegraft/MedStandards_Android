@@ -39,9 +39,12 @@ class AboutFragment : Fragment() {
             synchronization = true
         }
 
-        // SUBSCRIPTION DISABLED - Hide subscription button
+        // COMMENTED OUT: Subscription button logic disabled
         // if(Utils.premium)
-            binding.buttonSubs.visibility = View.GONE
+        //     binding.buttonSubs.visibility = View.GONE
+        
+        // Subscribe button is removed from layout, no need to hide it
+        // binding.buttonSubs.visibility = View.GONE
 
         binding.button.setOnClickListener {
             if(Utils.filesMap.isNotEmpty() && Utils.afFilesMap.isNotEmpty() && Utils.isInternetAvailable(requireActivity())) {
@@ -96,11 +99,13 @@ class AboutFragment : Fragment() {
             requireActivity().findViewById<BottomNavigationView>(R.id.nav_view).visibility = View.GONE
         }
 
-        // SUBSCRIPTION DISABLED - Subscription button disabled
-        // binding.buttonSubs.setOnClickListener {
-        //     Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_activity_main).navigate(R.id.action_navigation_about_to_navigation_subscriptin)
-        //     requireActivity().findViewById<BottomNavigationView>(R.id.nav_view).visibility = View.GONE
-        // }
+        // COMMENTED OUT: Subscribe button click listener disabled
+        /*
+        binding.buttonSubs.setOnClickListener {
+            Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_activity_main).navigate(R.id.action_navigation_about_to_navigation_subscriptin)
+            requireActivity().findViewById<BottomNavigationView>(R.id.nav_view).visibility = View.GONE
+        }
+        */
 
         return binding.root
     }
