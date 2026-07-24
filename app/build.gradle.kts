@@ -12,7 +12,7 @@ android {
         applicationId = "com.colbycoapps.med_standards"
         minSdk = 26
         targetSdk = 36
-        versionCode = 146028
+        versionCode = 146029
         versionName = "2.1.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
