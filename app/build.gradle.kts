@@ -13,7 +13,7 @@ android {
         minSdk = 26
         targetSdk = 36
         versionCode = 146028
-        versionName = "2.1.1"
+        versionName = "2.1.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true
@@ -57,11 +57,11 @@ dependencies {
  //   implementation(libs.android.pdf.viewer)
     implementation("com.tom-roush:pdfbox-android:2.0.27.0")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
-    implementation("androidx.work:work-runtime-ktx:2.10.0")
-    implementation("com.google.firebase:firebase-messaging:24.1.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.11.0")
+    implementation("androidx.work:work-runtime-ktx:2.11.2")
+    implementation("com.google.firebase:firebase-messaging:25.1.1")
     implementation("io.github.nikartm:fit-button:2.0.0")
-    implementation("com.android.billingclient:billing:7.1.1")
+    implementation("com.android.billingclient:billing:9.1.0")
     implementation("com.google.android.play:review:2.0.2")
     implementation("com.google.firebase:firebase-inappmessaging-display")
     implementation("com.google.firebase:firebase-analytics")
